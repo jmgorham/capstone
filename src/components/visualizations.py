@@ -15,8 +15,7 @@ def get_init_line_chart(grad_rate_df):
     fig = px.line(grad_rate_filtered_df, x='year', y='value', color='subgroup',
                   labels={'year': '',
                           'value': 'Four-Year Graduation Rate (%)',
-                          'subgroup': ''},
-                  title='Graduation Rates over Time')
+                          'subgroup': ''})
 
     # Include x-axis ticks for every year
     fig.update_xaxes(tickmode='array', tickvals=grad_rate_filtered_df['year'])
@@ -27,6 +26,12 @@ def get_init_line_chart(grad_rate_df):
             'entrywidthmode': 'fraction',
             'entrywidth': 0.3}  # 30% of total plot width
     )
+
+    fig.update_layout(
+        height=500
+    )
+
+    fig.update_layout(margin={'l': 0, 'r': 0, 't': 0, 'b': 0})
 
     return fig
 
@@ -128,79 +133,21 @@ def get_init_dumbbell_chart(grad_rate_df):
     )
 
     fig.update_layout(
-        title={'text': 'Graduation Rate Gaps over Time'},
-        height=1000,
+        height=500,
         legend_itemclick=False
     )
 
-    return fig
+    fig.update_layout(
+        legend={
+            'orientation': "h",
+            'yanchor': "bottom",
+            'y': -0.2,
+            'xanchor': "center",
+            'x': 0.5
+        }
+    )
 
-
-def get_dummy_dumbbell_chart():
-    # Create sample data
-    data = {
-        "year": [2020, 2021, 2022, 2023, 2024, 2025] * 3,
-        "value": [70.0, 73.2, 74.5, 77.8, 80.1, 80.5, 65.8, 66.7, 68.9, 70.2,
-                  73.4, 75.5, 50.3, 54.4, 55.5, 58.8, 57.5, 59.3],
-        "subgroup": ['subgroup 1'] * 6 + ['subgroup 2'] * 6 +
-        ['subgroup 3'] * 6
-    }
-    df = pd.DataFrame(data)
-
-    # Reference: https://plotly.com/python/dumbbell-plots/
-    df_dumbbell = {"line_x": [],
-                   "line_y": [],
-                   "2020": [],
-                   "2025": [],
-                   "colors": [],
-                   "years": [],
-                   "subgroups": []}
-
-    subgroups = df['subgroup'].unique()
-
-    for subgroup in subgroups:
-        df_dumbbell['2020'].extend(
-            [df.loc[(df.year == 2020) &
-                    (df.subgroup == subgroup)]['value'].values[0]])
-        df_dumbbell['2025'].extend(
-            [df.loc[(df.year == 2025) &
-                    (df.subgroup == subgroup)]['value'].values[0]])
-        df_dumbbell['line_x'].extend(
-            [
-                df.loc[(df.year == 2020) &
-                       (df.subgroup == subgroup)]['value'].values[0],
-                df.loc[(df.year == 2025) &
-                       (df.subgroup == subgroup)]['value'].values[0],
-                None
-            ]
-        )
-        df_dumbbell['line_y'].extend([subgroup, subgroup, None])
-
-        fig = go.Figure(
-            data=[
-                go.Scatter(
-                    x=df_dumbbell['line_x'],
-                    y=df_dumbbell['line_y'],
-                    mode='lines',
-                    showlegend=False,
-                    marker=dict(color="grey")
-                ),
-                go.Scatter(
-                    x=df_dumbbell['2020'],
-                    y=subgroups,
-                    mode='markers',
-                    name='2020',
-                    marker=dict(color='green', size=10)
-                ),
-                go.Scatter(
-                    x=df_dumbbell['2025'],
-                    y=subgroups,
-                    mode='markers',
-                    name='2025',
-                    marker=dict(color='blue', size=10)
-                )
-            ]
-        )
+    fig.update_layout(margin={'l': 0, 'r': 0, 't': 0, 'b': 0})
 
     return fig
 

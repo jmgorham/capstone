@@ -224,6 +224,7 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
+                                html.H6("Data Visualization 1"),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='grad-rate-line-chart',
@@ -240,6 +241,7 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
+                                html.H6("Data Visualization 2"),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='gaps-dumbbell-chart',
