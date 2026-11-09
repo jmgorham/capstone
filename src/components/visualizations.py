@@ -2,6 +2,7 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 import networkx as nx
+from src.utils.disparity_calculations import get_disparity_df
 
 
 def get_init_line_chart(grad_rate_df):
@@ -152,7 +153,81 @@ def get_init_dumbbell_chart(grad_rate_df):
     return fig
 
 
-def get_dummy_network_chart():
+def get_init_network_chart_dummy(grad_rate_df):
+    # Get disparity data
+    disparity_df = get_disparity_df(grad_rate_df, 2025)
+    node_districts = disparity_df['district'].tolist()
+    node_disparity = disparity_df['disparity'].tolist()
+    n_districts = len(node_districts)
+
+    # Generate a random geometric graph
+    G = nx.random_geometric_graph(n_districts, 0.125)
+
+    # Extract data for visualization
+    edge_x = []
+    edge_y = []
+    for edge in G.edges():
+        x0, y0 = G.nodes[edge[0]]['pos']
+        x1, y1 = G.nodes[edge[1]]['pos']
+        edge_x.append(x0)
+        edge_x.append(x1)
+        edge_x.append(None)
+        edge_y.append(y0)
+        edge_y.append(y1)
+        edge_y.append(None)
+    node_x = []
+    node_y = []
+    for node in G.nodes():
+        x, y = G.nodes[node]['pos']
+        node_x.append(x)
+        node_y.append(y)
+
+    # Draw edges
+    edge_trace = go.Scatter(
+        x=edge_x, y=edge_y,
+        line={'width': 0.5, 'color': '#888'},
+        hoverinfo='none',
+        mode='lines')
+
+    # Draw nodes
+    node_trace = go.Scatter(
+        x=node_x, y=node_y,
+        mode='markers',
+        hoverinfo='text',
+        marker={
+            'showscale': True,
+            'colorscale': 'Viridis',
+            'color': [],
+            'size': 10,
+            'colorbar': {
+                'thickness': 15,
+                'title': {
+                    'text': 'Graduation Rate Disparity',
+                    'side': 'right'
+                },
+                'xanchor': 'left',
+            },
+            'line_width': 2})
+
+    # Add color to nodes
+    node_trace.marker.color = node_disparity
+
+    # Hover text: district name
+    node_trace.text = node_districts
+
+    # Build visualization
+    fig = go.Figure(data=[edge_trace, node_trace],
+                    layout=go.Layout(
+                    showlegend=False,
+                    hovermode='closest',
+                    margin={'b': 0, 'l': 0, 'r': 0, 't': 0},
+                    xaxis={'showgrid': False, 'zeroline': False,
+                           'showticklabels': False},
+                    yaxis={'showgrid': False, 'zeroline': False,
+                           'showticklabels': False})
+                    )
+
+    return fig
     # https://plotly.com/python/network-graphs/
     G = nx.random_geometric_graph(200, 0.125)
     edge_x = []

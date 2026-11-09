@@ -262,7 +262,8 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='district-network-graph-chart',
-                                    figure=viz.get_dummy_network_chart()
+                                    figure=viz.get_init_network_chart_dummy(
+                                        grad_rate_df)
                                 )
                             ])
                         ])
