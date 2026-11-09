@@ -171,9 +171,7 @@ def create_layout(grad_rate_df):
                                 # KPI title
                                 html.H6("Statewide Graduation Rate"),
                                 # KPI value, handled by callbacks
-                                html.H2(str(
-                                    kpis.get_statewide_grad_rate(
-                                        grad_rate_df)) + '%',
+                                html.H2('',  # placeholder dummy value
                                         id="kpi-grad-rate")
                             ])
                         ])
@@ -186,9 +184,7 @@ def create_layout(grad_rate_df):
                                 # KPI title
                                 html.H6("Median Graduation Rate Disparity"),
                                 # KPI value, handled by callbacks
-                                html.H2(str(
-                                    kpis.get_median_grad_rate_disparity(
-                                        grad_rate_df)) + 'pp',
+                                html.H2('',  # placeholder dummy value
                                         id="kpi-disparity")
                             ])
                         ])
@@ -201,9 +197,7 @@ def create_layout(grad_rate_df):
                                 # KPI title
                                 html.H6("Districts Improving Disparity"),
                                 # KPI value, handled by callbacks
-                                html.H2(str(
-                                    kpis.get_pct_districts_improving_disparity(
-                                        grad_rate_df)) + "%",
+                                html.H2('',  # placeholder dummy value
                                         id="kpi-pct-improving")
 
                             ])

@@ -1,35 +1,46 @@
 import pandas as pd
-from src.utils.disparity_calculations import get_disparity_df
+import src.utils.data_utils as data_utils
 
 
-def get_statewide_grad_rate(grad_rate_df):
+def get_statewide_grad_rate(grad_rate_df, metric, year):
     grad_rate_df_filtered = grad_rate_df[(grad_rate_df['district'] ==
                                           'Statewide School District') &
                                          (grad_rate_df['subgroup'] ==
                                           'All Students') &
-                                         (grad_rate_df['year'] == 2025) &
-                                         (grad_rate_df['metric']
-                                          == 'Four-Year Graduation Rate')]
+                                         (grad_rate_df['year'] == year) &
+                                         (grad_rate_df['metric'] == metric)]
     overall_grad_rate = grad_rate_df_filtered['value'].item()
-    overall_grad_rate = round(overall_grad_rate, 1)
     return overall_grad_rate
 
 
-def get_median_grad_rate_disparity(grad_rate_df):
-    district_disparity_df = get_disparity_df(grad_rate_df, 2025)
+def get_median_grad_rate_disparity(grad_rate_df, metric, year, subgroups):
+    # Filter by subgroups
+    subgroups_to_include = subgroups + ['All Students']
+    grad_rate_df_filtered = grad_rate_df[grad_rate_df['subgroup'].isin(
+        subgroups_to_include)]
+
+    district_disparity_df = data_utils.get_disparity_df(
+        grad_rate_df_filtered, metric, year)
 
     # Determine district-level median disparity
     median_grad_rate_disparity = district_disparity_df['disparity'].median()
-    median_grad_rate_disparity = round(median_grad_rate_disparity, 1)
     return median_grad_rate_disparity
 
 
-def get_pct_districts_improving_disparity(grad_rate_df):
-    disparity_start_year_df = get_disparity_df(grad_rate_df, 2020)[
+def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
+                                          stop_year, subgroups):
+    # Filter by subgroups
+    subgroups_to_include = subgroups + ['All Students']
+    grad_rate_df_filtered = grad_rate_df[grad_rate_df['subgroup'].isin(
+        subgroups_to_include)]
+
+    disparity_start_year_df = data_utils.get_disparity_df(
+        grad_rate_df_filtered, metric, start_year)[
         ['district', 'disparity']].rename(
             columns={'disparity': 'disparity_start'})
 
-    disparity_stop_year_df = get_disparity_df(grad_rate_df, 2025)[
+    disparity_stop_year_df = data_utils.get_disparity_df(
+        grad_rate_df_filtered, metric, stop_year)[
         ['district', 'disparity']].rename(
             columns={'disparity': 'disparity_stop'})
 
@@ -42,6 +53,4 @@ def get_pct_districts_improving_disparity(grad_rate_df):
 
     # Calculate percent improving
     pct_improving = (disparity_change_df['change'] < 0).mean() * 100
-    pct_improving = round(pct_improving, 1)
-
     return pct_improving

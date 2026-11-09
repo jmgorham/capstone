@@ -1,10 +1,9 @@
 import pandas as pd
 
 
-def get_disparity_df(grad_rate_df, year):
+def get_disparity_df(grad_rate_df, metric, year):
     # Filter data
-    grad_rate_filtered_df = grad_rate_df[(grad_rate_df['metric']
-                                          == 'Four-Year Graduation Rate') &
+    grad_rate_filtered_df = grad_rate_df[(grad_rate_df['metric'] == metric) &
                                          (grad_rate_df['year'] == year) &
                                          (grad_rate_df['district']
                                           != 'Statewide School District')]

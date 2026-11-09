@@ -2,7 +2,7 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 import networkx as nx
-from src.utils.disparity_calculations import get_disparity_df
+from src.utils.data_utils import get_disparity_df
 
 
 def get_init_line_chart(grad_rate_df):
@@ -155,7 +155,8 @@ def get_init_dumbbell_chart(grad_rate_df):
 
 def get_init_network_chart_dummy(grad_rate_df):
     # Get disparity data
-    disparity_df = get_disparity_df(grad_rate_df, 2025)
+    disparity_df = get_disparity_df(grad_rate_df, 'Four-Year Graduation Rate',
+                                    2025)
     node_districts = disparity_df['district'].tolist()
     node_disparity = disparity_df['disparity'].tolist()
     n_districts = len(node_districts)
