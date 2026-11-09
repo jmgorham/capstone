@@ -41,7 +41,8 @@ def create_layout(grad_rate_df):
         # ROW 1: Dashboard title and header
         dbc.Row([
             dbc.Col(
-                html.H1("TITLE",
+                html.H1("Equity in Education Dashboard: Graduation Rates "
+                        "in New York State School Districts",
                         # className argument gives style info
                         className="text-center my-4 text-primary"),
                 # Bootstrap Components divides screens into 12 columns
@@ -144,7 +145,7 @@ def create_layout(grad_rate_df):
                                 )
                             ])
 
-                        ], gap=3)  # gap provides vertical padding
+                        ], gap=4)  # gap provides vertical padding
                     ])
                 ],
                     color="light",  # color for background of card container
@@ -211,20 +212,7 @@ def create_layout(grad_rate_df):
 
                 ], className="mb-4"),  # add vertical padding
 
-                # ROW 2: Info on selected school district
-                dbc.Row([
-                    dbc.Col([
-                        dbc.Card([
-                            dbc.CardBody([
-                                # Text content handled by callbacks
-                                html.H6("Info on Selected District",
-                                        id="district-info-text")
-                            ])
-                        ])
-                    ])
-                ], className="mb-4"),  # add vertical padding
-
-                # ROW 3: 2 data visualizations
+                # ROW 2: 2 data visualizations
                 dbc.Row([
 
                     # VIZ 1: Line chart of grad rate over time
@@ -263,7 +251,7 @@ def create_layout(grad_rate_df):
                     # Add vertical padding, force columns to stay same height
                 ], className="mb-4 flex-grow-1 align-items-streth"),
 
-                # ROW 4: 1 data visualization
+                # ROW 3: 1 data visualization
                 dbc.Row([
 
                     # VIZ 3: Network adjacency graph of districts
