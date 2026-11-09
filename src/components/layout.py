@@ -8,14 +8,31 @@ interactive functionality.
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 
+import src.components.visualizations as viz
+from src.components.filters_init import initialize_filters
 
-def create_layout():
+
+def create_layout(grad_rate_df):
     """Define the app's frontend UI layout.
+
+    Args:
+        grad_rate_df (DataFrame): graduation rates data. Must contain the
+            following columns:
+            - district
+            - metric
+            - year
+            - subgroup
+            - value
 
     Returns:
         dbc.Container: UI layout for Dash app, including all
             components required for interactive functionality.
     """
+    # Use data to get default config values for UI filter components
+    # JSON-like dictionary data with default settings
+    filter_defaults = initialize_filters(grad_rate_df)
+
+    # Build dashboard layout
     layout = dbc.Container([
         # Container object contains Row objects as children
         # Row objects contain Col objects as children
@@ -52,12 +69,11 @@ def create_layout():
                                 dcc.Dropdown(
                                     # ID tag used for callbacks
                                     id="district-select-dropdown",
-                                    options=[
-                                        {'label': 'Option 1', 'value': '1'},
-                                        {'label': 'Option 2', 'value': '2'},
-                                        {'label': 'Option 3', 'value': '3'}
-                                    ],
-                                    value='1',  # default selection
+                                    options=filter_defaults['districts']
+                                    ['options'],
+                                    # Value determines default selection
+                                    value=filter_defaults['districts']
+                                    ['value'],
                                     searchable=True,  # adds search bar
                                     clearable=True,  # adds 'X' to clear
                                     # Placeholder creates text hint for search
@@ -76,12 +92,10 @@ def create_layout():
                                 dcc.RadioItems(
                                     # ID tag used for callbacks
                                     id="metric-select-radio",
-                                    options=[
-                                        {'label': 'Metric 1', 'value': '1'},
-                                        {'label': 'Metric 2', 'value': '2'},
-                                        {'label': 'Metric 3', 'value': '3'}
-                                    ],
-                                    value='1',  # default selection
+                                    options=filter_defaults['metrics']
+                                    ['options'],
+                                    # Value determines default selection
+                                    value=filter_defaults['metrics']['value'],
                                     inline=False  # stack vertically
                                 )
                             ]),
@@ -99,8 +113,8 @@ def create_layout():
                                     # ID tag used for callbacks
                                     id='year-range-select',
                                     # Min and max allowable years
-                                    min=2020,
-                                    max=2025,
+                                    min=filter_defaults['years']['min'],
+                                    max=filter_defaults['years']['max'],
                                     # Enforce 1-year step intervals
                                     step=1,
                                     # Dict comprehension to place marks
@@ -108,7 +122,8 @@ def create_layout():
                                     # at every year between min and max
                                     marks={year: str(year)
                                            for year in range(2020, 2026)},
-                                    value=[2021, 2023]  # default range
+                                    # Value determines default selection
+                                    value=filter_defaults['years']['value']
                                 )
                             ]),
 
@@ -121,19 +136,25 @@ def create_layout():
                                 dcc.Checklist(
                                     # ID tag used for callbacks
                                     id='subgroup-select-checklist',
-                                    options=[
-                                        {'label': 'Subgroup 1', 'value': '1'},
-                                        {'label': 'Subgroup 2', 'value': '2'},
-                                        {'label': 'Subgroup 3', 'value': '3'}
-                                    ],
-                                    value=['1', '2', '3']  # default selections
+                                    options=filter_defaults['subgroups']
+                                    ['options'],
+                                    # Value determines default selection
+                                    value=filter_defaults['subgroups']['value']
                                 )
                             ])
 
                         ], gap=3)  # gap provides vertical padding
                     ])
-                ], color="light")  # color for background of card container
-            ], width=3),  # sidebar fills 3 columns, or 1/4 of screen width
+                ],
+                    color="light",  # color for background of card container
+                    # Force card to fill full horizontal and vertical space
+                    className="h-100 w-100"
+                )
+            ],
+                width=3,  # sidebar fills 3 columns, or 1/4 of screen width'
+                # Stretch column container vertically as a flex container
+                className="d-flex mb-4"
+            ),
 
             # COL 2: Main content for core dashboard visualizations
             dbc.Col([
@@ -203,20 +224,35 @@ def create_layout():
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Data Visualization 1")
+                                dcc.Graph(
+                                    # Graph ID for callbacks
+                                    id='grad-rate-line-chart',
+                                    figure=viz.get_init_line_chart(
+                                        grad_rate_df)
+                                )
                             ])
-                        ])
-                    ]),
+                            # Force card to fill ful available space
+                        ], className="h-100 w-100")
+                    ], width=6,  # width should span half of container
+                        className="d-flex"),
 
                     # VIZ 2: Dumbbell chart of gaps over time
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Data Visualization 2")
+                                dcc.Graph(
+                                    # Graph ID for callbacks
+                                    id='gaps-dumbbell-chart',
+                                    figure=viz.get_init_dumbbell_chart(
+                                        grad_rate_df)
+                                )
                             ])
-                        ])
-                    ])
-                ], className="mb-4"),  # add vertical padding
+                            # Force card to fill full available space
+                        ], className="h-100 w-100")
+                    ], width=6,  # width should span half of container
+                        className="d-flex")
+                    # Add vertical padding, force columns to stay same height
+                ], className="mb-4 flex-grow-1 align-items-streth"),
 
                 # ROW 4: 1 data visualization
                 dbc.Row([
@@ -225,15 +261,29 @@ def create_layout():
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Data Visualization 3")
+                                html.H6("Data Visualization 3"),
+                                dcc.Graph(
+                                    # Graph ID for callbacks
+                                    id='district-network-graph-chart',
+                                    figure=viz.get_dummy_network_chart()
+                                )
                             ])
                         ])
                     ])
                 ])
 
-            ], width=9)  # main body takes up 9 columns or 3/4 of screen
+            ],
+                width=9,  # main body takes up 9 columns or 3/4 of screen
+                className="mb-4"  # add vertical padding at bottom
+            )
 
-        ])
-    ], fluid=True)  # container stretches to fill entire width of screen
+        ],
+            # Keep both columsn the same height
+            # Change overall height based on Container constraints
+            className="flex-grow-1 align-items-stretch"
+        )
+    ],
+        fluid=True  # container stretches to fill entire width of screen]
+    )
 
     return layout
