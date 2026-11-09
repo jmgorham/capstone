@@ -32,3 +32,23 @@ def get_disparity_df(grad_rate_df, metric, year):
         district_disparity_df['min_subgroup_grad_rate']
 
     return district_disparity_df
+
+
+def get_gaps_df(grad_rate_df, metric, year):
+    # Filter data
+    grad_rate_filtered_df = grad_rate_df[
+        (grad_rate_df['metric'] == metric) &
+        (grad_rate_df['year'] == year)]
+
+    # Extract baseline for comparison, grad rate for 'All Students'
+    baseline = grad_rate_filtered_df[
+        grad_rate_filtered_df['subgroup'] == 'All Students']['value'].values[0]
+
+    # Filter to exclude subgroup 'All Students'
+    subgroups_gap_df = grad_rate_filtered_df[
+        grad_rate_filtered_df['subgroup'] != 'All Students']
+
+    # Add column for gap
+    subgroups_gap_df['gap'] = subgroups_gap_df['value'] - baseline
+
+    return subgroups_gap_df

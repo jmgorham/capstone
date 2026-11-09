@@ -122,6 +122,11 @@ def generate_sample_grad_rate_data():
 
                 # Generate a random change from one year to the next
                 change = random.uniform(-1, 3)
+
+                # Ensure that 'All Students' has a small change
+                if subgroup == 'All Students':
+                    change = 0.5
+
                 # Rates capped at 100%
                 next_rate = min(last_rate + change, 100.0)
 

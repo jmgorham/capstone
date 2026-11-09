@@ -7,6 +7,7 @@ interactive functionality.
 
 import dash_bootstrap_components as dbc
 from dash import dcc, html
+import plotly.graph_objects as go
 
 import src.components.visualizations as viz
 import src.components.kpis as kpis
@@ -217,8 +218,7 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='grad-rate-line-chart',
-                                    figure=viz.get_init_line_chart(
-                                        grad_rate_df)
+                                    figure=go.Figure()  # placeholder graph
                                 )
                             ])
                             # Force card to fill ful available space
@@ -234,8 +234,7 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='gaps-dumbbell-chart',
-                                    figure=viz.get_init_dumbbell_chart(
-                                        grad_rate_df)
+                                    figure=go.Figure()  # placeholder graph
                                 )
                             ])
                             # Force card to fill full available space
@@ -255,9 +254,8 @@ def create_layout(grad_rate_df):
                                 html.H6("Data Visualization 3"),
                                 dcc.Graph(
                                     # Graph ID for callbacks
-                                    id='district-network-graph-chart',
-                                    figure=viz.get_init_network_chart_dummy(
-                                        grad_rate_df)
+                                    id='district-network-chart',
+                                    figure=go.Figure()  # placeholder graph
                                 )
                             ])
                         ])
