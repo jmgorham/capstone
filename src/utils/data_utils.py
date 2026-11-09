@@ -1,7 +1,29 @@
+"""Utilities for processing data.
+
+This module provides commonly-used utility functions for processing data sets
+including calculations and transformations uing data.
+"""
+
 import pandas as pd
 
 
 def get_disparity_df(grad_rate_df, metric, year):
+    """Get data on graduation rate disparities in all districts.
+
+    A district's graduation rate disparity is defined as the difference between
+    its overall graduation rate and the lowest graduation rate across all
+    demographic subgroups.
+
+    Args:
+        grad_rate_df (DataFrame): data set for graduation rates
+        metric (string): metric used to determine graduation rates
+        year (int): year of focus for analysis
+
+    Returns:
+        DataFrame: transformed data set with graduation rate disparity data,
+            containing a column 'disparity' with the calculated disparity
+            value for each school district
+    """
     # Filter data
     grad_rate_filtered_df = grad_rate_df[(grad_rate_df['metric'] == metric) &
                                          (grad_rate_df['year'] == year) &
@@ -35,6 +57,24 @@ def get_disparity_df(grad_rate_df, metric, year):
 
 
 def get_gaps_df(grad_rate_df, metric, year):
+    """Get data on graduation rate gaps for all subgroups.
+
+    A graduation rate gap is defined as the difference between a subgroup's
+    graduation rate and the overall graduation rate.
+
+    This function assumes the input data set grad_rate_df has been filtered
+    to include data for only one school district.
+
+    Args:
+        grad_rate_df (DataFrame): data set for graduation rates
+        metric (string): metric used to measure graduation rates
+        year (int): year of focus for analysis
+
+    Returns:
+        DataFrame: transformed data set with gaps data, containing a column
+            'gap' with the value of the graduation rate gap for each
+            subgroup
+    """
     # Filter data
     grad_rate_filtered_df = grad_rate_df[
         (grad_rate_df['metric'] == metric) &

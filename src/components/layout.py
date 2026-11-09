@@ -6,11 +6,11 @@ interactive functionality.
 """
 
 import dash_bootstrap_components as dbc
-from dash import dcc, html
 import plotly.graph_objects as go
+from dash import dcc, html
 
-import src.components.visualizations as viz
 import src.components.kpis as kpis
+import src.components.visualizations as viz
 from src.components.filters_init import initialize_filters
 
 
@@ -18,17 +18,11 @@ def create_layout(grad_rate_df):
     """Define the app's frontend UI layout.
 
     Args:
-        grad_rate_df (DataFrame): graduation rates data. Must contain the
-            following columns:
-            - district
-            - metric
-            - year
-            - subgroup
-            - value
+        grad_rate_df (DataFrame): data set for graduation rates
 
     Returns:
         dbc.Container: UI layout for Dash app, including all
-            components required for interactive functionality.
+            components required for interactive functionality
     """
     # Use data to get default config values for UI filter components
     # JSON-like dictionary data with default settings

@@ -1,13 +1,35 @@
-import plotly.express as px
-import pandas as pd
-import plotly.graph_objects as go
+"""App component for defining data visualizations.
+
+This module contains functions for creating data visualizations displayed
+on the dashboard in order to communicate with data effectively.
+"""
+
 import networkx as nx
+import plotly.express as px
+import plotly.graph_objects as go
+
 from src.utils.data_utils import get_disparity_df, get_gaps_df
 
 
 def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
                              stop_year, subgroups):
-    # Build list of subgroups to include
+    """Create line chart visualization for graduation rates over time.
+
+    The figure displays a time-series line chart with a different series for
+    each demogrpahic subgroup, indicating the graduation rate in each year.
+
+    Args:
+        grad_rate_df (DataFrame): data set for graduation rates
+        district (string): school district for focus of analysis
+        metric (string): metric used to measure graduation rates
+        start_year (int): the minimum year included in analysis
+        stop_year (int): the maximum year included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        Figure: Plotly figure displaying graduation rates line chart
+    """
+    # Build list of subgroups to include, with 'All Students' as a baseline
     subgroups_to_include = subgroups + ['All Students']
 
     # Filter data
@@ -20,6 +42,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
 
     # Build visualization
     fig = px.line(grad_rate_filtered_df, x='year', y='value', color='subgroup',
+                  # Format axis labels on the chart
                   labels={'year': '',
                           'value': f'{metric} (%)',
                           'subgroup': ''})
@@ -28,9 +51,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
     fig.update_xaxes(tickmode='array', tickvals=grad_rate_filtered_df['year'])
 
     # Constrain height of visualization
-    fig.update_layout(
-        height=500
-    )
+    fig.update_layout(height=500)
 
     # Remove whitespace padding from graph margins
     fig.update_layout(margin={'l': 0, 'r': 0, 't': 0, 'b': 0})
@@ -40,6 +61,24 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
 
 def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
                                  stop_year, subgroups):
+    """Create dumbbell chart for graduation rate gaps over time.
+
+    The figure displays a dumbbell chart. The x-axis indicates the difference
+    between a subgroup's graduation rate and the average for all students.
+    For each subgroup, one point indicates the disparity in the start year,
+    and another point indicates the disparty in the stop year.
+
+    Args:
+        grad_rate_df (DataFrame): data set for graduation rates
+        district (string): school district for focus of analysis
+        metric (string): metric used to measure graduation rates
+        start_year (int): the minimum year included in analysis
+        stop_year (int): the maximum year included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        Figure: Plotly figure displaying grad rate gaps dumbbell chart
+    """
     # Build list of subgroups to include
     subgroups_to_include = subgroups + ['All Students']
 
@@ -135,6 +174,23 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
 
 def get_districts_network_chart(grad_rate_df, district, metric, stop_year,
                                 subgroups):
+    """Create network chart visualization for similar school districts.
+
+    The figure displays an adjacency graph chart with each school district
+    connected to districts similar in characteristics. Each node represents a
+    district. Nodes are colored by the graudation rate disparity in each
+    district.
+
+    Args:
+        grad_rate_df (DataFrame): data set for graduation rates
+        district (string): school district for focus of analysis
+        metric (string): metric used to measure graduation rates
+        stop_year (int): the maximum year included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        Figure: Plotly figure displaying district network chart
+    """
     # Filter data
     subgroups_to_include = subgroups + ['All Students']
     grad_rate_filtered_df = grad_rate_df[
@@ -215,7 +271,7 @@ def get_districts_network_chart(grad_rate_df, district, metric, stop_year,
                            'showticklabels': False})
                     )
 
-    # Zoom in on one school district
+    # Zoom in on the selected school district
     district_index = node_districts.index(district)
     zoom_x = node_x[district_index]
     zoom_y = node_y[district_index]

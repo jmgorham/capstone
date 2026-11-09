@@ -1,7 +1,15 @@
-from dash import callback, Output, Input
-from src.utils.sample_data import get_sample_grad_rate_data
-import src.components.kpis as kpis
+"""Component for application callbacks.
+
+This module defines callbacks to dynamically update the dashboard content,
+including KPI tiles and data visualizations, whenever the relevant UI filter
+selections are changed.
+"""
+
+from dash import Input, Output, callback
+
 import src.components.visualizations as viz
+from src.components import kpis
+from src.utils.sample_data import get_sample_grad_rate_data
 
 
 # Update KPI 1: Statewide Graduation Rate
@@ -12,6 +20,15 @@ import src.components.visualizations as viz
     Input(component_id='year-range-select', component_property='value')
 )
 def update_statewide_grad_rate_kpi(metric, year_range):
+    """Callback to update statewide graduation rate KPI tile.
+
+    Args:
+        metric (string): metric used to measure graduation rate
+        year_range (list[int, int]): range of years included in analysis
+
+    Returns:
+        string: formatted KPI text value for statewide graduation rate    
+    """
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -24,6 +41,7 @@ def update_statewide_grad_rate_kpi(metric, year_range):
 
     # Format as string
     overall_grad_rate_kpi_string = f'{overall_grad_rate:.1f}%'
+
     return overall_grad_rate_kpi_string
 
 
@@ -36,6 +54,16 @@ def update_statewide_grad_rate_kpi(metric, year_range):
     Input(component_id='subgroup-select-checklist', component_property='value')
 )
 def update_median_disparity_kpi(metric, year_range, subgroups):
+    """Callback to update median graduation rate disparity KPI tile.
+
+    Arguments:
+        metric (string): metric used to measure graduation rate
+        year_range (list[int, int]): range of years included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        string: formatted KPI text value for median graduation rate disparity
+    """
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -48,6 +76,7 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
 
     # Format as string
     median_disparity_kpi_string = f'{median_grad_rate_disparity:.1f}pp'
+
     return median_disparity_kpi_string
 
 
@@ -60,6 +89,16 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
     Input(component_id='subgroup-select-checklist', component_property='value')
 )
 def update_districts_improving_kpi(metric, year_range, subgroups):
+    """Callback to update percent of districts improving disparity KPI tile.
+
+    Arguments:
+        metric (string): metric used to measure graduation rate
+        year_range (list[int, int]): range of years included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        string: formatted KPI text value for percent of districts improving
+    """
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -73,6 +112,7 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
 
     # Format as string
     pct_improving_kpi_string = f'{pct_improving:.1f}%'
+
     return pct_improving_kpi_string
 
 
@@ -86,6 +126,17 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
     Input(component_id='subgroup-select-checklist', component_property='value')
 )
 def update_grad_rate_line_chart(district, metric, year_range, subgroups):
+    """Callback to update graduation rate over time line chart figure.
+
+    Arguments:
+        district (string): school district to focus on
+        metric (string): metric used to measure graduation rate
+        year_range (list[int, int]): range of years included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        Figure: Plotly figure displaying graduation rate over time line chart
+    """
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -110,6 +161,17 @@ def update_grad_rate_line_chart(district, metric, year_range, subgroups):
     Input(component_id='subgroup-select-checklist', component_property='value')
 )
 def update_gaps_dumbbell_chart(district, metric, year_range, subgroups):
+    """Callback to update graduation gaps over time dumbbell chart figure.
+
+    Arguments:
+        district (string): school district to focus on
+        metric (string): metric used to measure graduation rate
+        year_range (list[int, int]): range of years included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        Figure: Plotly figure displaying graduation gaps dumbbell chart
+    """
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -134,6 +196,17 @@ def update_gaps_dumbbell_chart(district, metric, year_range, subgroups):
     Input(component_id='subgroup-select-checklist', component_property='value')
 )
 def update_districts_network_chart(district, metric, year_range, subgroups):
+    """Callback to update districts adjacency network chart figure.
+
+    Arguments:
+        district (string): school district to focus on
+        metric (string): metric used to measure graduation rate
+        year_range (list[int, int]): range of years included in analysis
+        subgroups (list<string>): demographic subgroups included in analysis
+
+    Returns:
+        Figure: Plotly figure displaying districts adjacency network
+    """
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
