@@ -9,6 +9,7 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 
 import src.components.visualizations as viz
+import src.components.kpis as kpis
 from src.components.filters_init import initialize_filters
 
 
@@ -167,9 +168,11 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("KPI Tile 1"),
+                                html.H6("Statewide Graduation Rate"),
                                 # KPI value, handled by callbacks
-                                html.H2("50.00%",  # placeholder value
+                                html.H2(str(
+                                    kpis.get_statewide_grad_rate(
+                                        grad_rate_df)) + '%',
                                         id="kpi-grad-rate")
                             ])
                         ])
@@ -180,9 +183,11 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("KPI Tile 2"),
+                                html.H6("Median Graduation Rate Disparity"),
                                 # KPI value, handled by callbacks
-                                html.H2("12pp",  # placeholder value
+                                html.H2(str(
+                                    kpis.get_median_grad_rate_disparity(
+                                        grad_rate_df)) + 'pp',
                                         id="kpi-disparity")
                             ])
                         ])
@@ -193,9 +198,11 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("KPI Tile 3"),
+                                html.H6("Districts Improving Disparity"),
                                 # KPI value, handled by callbacks
-                                html.H2("65%",  # placeholder value
+                                html.H2(str(
+                                    kpis.get_pct_districts_improving_disparity(
+                                        grad_rate_df)) + "%",
                                         id="kpi-pct-improving")
 
                             ])

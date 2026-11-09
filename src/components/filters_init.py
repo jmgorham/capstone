@@ -23,12 +23,17 @@ def initialize_filters(grad_rate_df):
             Example: {'districts': {'options': [1, 2], 'value': 1}}
 
     """
+    # Filter out aggregates that should not be selectable
+    grad_rate_df_filtered = grad_rate_df[(grad_rate_df['district']
+                                          != 'Statewide School District') &
+                                         (grad_rate_df['subgroup']
+                                          != 'All Students')]
 
     # Extract values from data for districts, metrics, years, and subgroups
-    districts = sorted(grad_rate_df['district'].dropna().unique())
-    metrics = sorted(grad_rate_df['metric'].dropna().unique())
-    years = sorted(grad_rate_df['year'].dropna().unique())
-    subgroups = sorted(grad_rate_df['subgroup'].dropna().unique())
+    districts = sorted(grad_rate_df_filtered['district'].dropna().unique())
+    metrics = sorted(grad_rate_df_filtered['metric'].dropna().unique())
+    years = sorted(grad_rate_df_filtered['year'].dropna().unique())
+    subgroups = sorted(grad_rate_df_filtered['subgroup'].dropna().unique())
 
     # Set default values
     default_district = 'Canidae School District'

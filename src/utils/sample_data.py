@@ -79,7 +79,7 @@ ANIMALS = ['Canidae', 'Felidae', 'Cat', 'Cattle', 'Dog', 'Donkey', 'Goat',
            'Wildfowl', 'Wolf', 'Wolverine', 'Wombat', 'Woodpecker', 'Worm',
            'Wren', 'Xerinae', 'Yak', 'Zebra', 'Alpaca', 'Cat', 'Cattle',
            'Chicken', 'Dog', 'Donkey', 'Ferret', 'Gayal', 'Goldfish', 'Guppy',
-           'Horse', 'Koi', 'Llama', 'Sheep', 'Yak']
+           'Horse', 'Koi', 'Llama', 'Sheep', 'Yak', 'Statewide']
 
 
 def generate_sample_grad_rate_data():
@@ -110,6 +110,10 @@ def generate_sample_grad_rate_data():
 
             # Randomly generate sample grad rate data
             base_rate = random.uniform(40, 80)
+
+            # Ensure that 'All Students' has a high base rate
+            if subgroup == 'All Students':
+                base_rate = 80.0
 
             # Generate 4-year grad rates for 2020 through 2025
             four_year = [base_rate]
