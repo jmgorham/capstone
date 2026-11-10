@@ -5,7 +5,7 @@ including KPI tiles and data visualizations, whenever the relevant UI filter
 selections are changed.
 """
 
-from dash import Input, Output, callback
+from dash import Input, Output, callback, no_update
 
 import src.components.visualizations as viz
 from src.components import kpis
@@ -219,3 +219,23 @@ def update_districts_network_chart(district, metric, year_range, subgroups):
         grad_rate_df, district, metric, start_year, stop_year, subgroups)
 
     return network_graph_fig
+
+
+# Update selected school district when a user clicks on a node (point)
+# on Data Visualization 3: Network Chart, Similar School Districts
+@callback(
+    Output(component_id='district-select-dropdown',
+           component_property='value'),
+    Input(component_id='district-network-chart',
+          component_property='clickData'),
+    prevent_initial_call=True
+)
+def update_selected_district_on_click(click_data):
+    # If no point has been clicked, exit without doing anything
+    if click_data is None:
+        return no_update
+
+    # Extact name of district associated with clicked node
+    clicked_district = click_data['points'][0]['customdata'][0]
+
+    return clicked_district
