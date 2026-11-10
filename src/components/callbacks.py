@@ -210,11 +210,12 @@ def update_districts_network_chart(district, metric, year_range, subgroups):
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
-    # Extract last year from selected year range
+    # Extract start and stop years from selected range
+    start_year = year_range[0]
     stop_year = year_range[1]
 
     # Re-build visualization
     network_graph_fig = viz.get_districts_network_chart(
-        grad_rate_df, district, metric, stop_year, subgroups)
+        grad_rate_df, district, metric, start_year, stop_year, subgroups)
 
     return network_graph_fig
