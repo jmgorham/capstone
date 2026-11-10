@@ -5,6 +5,8 @@ determine the options and default values for UI filters in the application
 layout.
 """
 
+from src.utils.sorting_utils import sort_metrics, sort_subgroups
+
 
 def initialize_filters(grad_rate_df):
     """Determine value options and defaults for UI filter components.
@@ -35,6 +37,10 @@ def initialize_filters(grad_rate_df):
     years = sorted(grad_rate_df_filtered['year'].dropna().unique())
     subgroups = sorted(grad_rate_df_filtered['subgroup'].dropna().unique())
 
+    # Apply custom sorting orders to metrics and subgroups
+    metrics_sorted = sort_metrics(metrics)
+    subgroups_sorted = sort_subgroups(subgroups)
+
     # Set default values
     default_district = 'Canidae School District'
     default_metric = 'Four-Year Graduation Rate'
@@ -56,10 +62,10 @@ def initialize_filters(grad_rate_df):
         "metrics": {
             "options": [  # list comprehension to build options based on data
                 {"label": metric, "value": metric}
-                for metric in metrics
+                for metric in metrics_sorted
             ],
-            "value": default_metric if default_metric in metrics
-            else metrics[0]
+            "value": default_metric if default_metric in metrics_sorted
+            else metrics_sorted[0]
         },
 
         # Defaults for year range selector
@@ -73,9 +79,9 @@ def initialize_filters(grad_rate_df):
         "subgroups": {
             "options": [  # list comprehension to build options based on data
                 {"label": subgroup, "value": subgroup}
-                for subgroup in subgroups
+                for subgroup in subgroups_sorted
             ],
-            "value": subgroups  # select all values by default
+            "value": subgroups_sorted  # select all values by default
         }
     }
 

@@ -9,6 +9,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 
 from src.utils.data_utils import get_disparity_df, get_gaps_df
+from src.utils.sorting_utils import sort_subgroups
 
 
 def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
@@ -32,6 +33,9 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
     # Build list of subgroups to include, with 'All Students' as a baseline
     subgroups_to_include = subgroups + ['All Students']
 
+    # Sort subgroup values for visualization
+    subgroups_sorted = sort_subgroups(subgroups_to_include)
+
     # Filter data
     grad_rate_filtered_df = grad_rate_df[(
         grad_rate_df['district'] == district) &
@@ -45,7 +49,8 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
                   # Format axis labels on the chart
                   labels={'year': '',
                           'value': f'{metric} (%)',
-                          'subgroup': ''})
+                          'subgroup': ''},
+                  category_orders={'subgroup': subgroups_sorted})
 
     # Include x-axis ticks for every year
     fig.update_xaxes(tickmode='array', tickvals=grad_rate_filtered_df['year'])
@@ -79,8 +84,12 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
     Returns:
         Figure: Plotly figure displaying grad rate gaps dumbbell chart
     """
-    # Build list of subgroups to include
+    # Build list of subgroups to include in data transformations
     subgroups_to_include = subgroups + ['All Students']
+
+    # Sort subgroup values for visualization
+    # Reverse the list since the chart is constructed from the bottom up
+    subgroups_sorted = sort_subgroups(subgroups)[::-1]
 
     # Filter data
     grad_rate_filtered_df = grad_rate_df[(
@@ -99,7 +108,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
                      "stop_values": []}
 
     # Loop through subgroups to build out data
-    for subgroup in subgroups:
+    for subgroup in subgroups_sorted:
         # Extract gap values in start year and stop year
         gap_start_year = gaps_start_year_df[gaps_start_year_df['subgroup']
                                             == subgroup]['gap'].values[0]
@@ -132,7 +141,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             # Draw point markers for the starting points of each dumbbell
             go.Scatter(
                 x=dumbbell_data['start_values'],
-                y=subgroups,
+                y=subgroups_sorted,
                 mode='markers',
                 name=str(start_year),
                 marker={'color': 'green', 'size': 10}
@@ -141,7 +150,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             # Draw point markers for the stopping points of each dumbbell
             go.Scatter(
                 x=dumbbell_data['stop_values'],
-                y=subgroups,
+                y=subgroups_sorted,
                 mode='markers',
                 name=str(stop_year),
                 marker={'color': 'blue', 'size': 10}
