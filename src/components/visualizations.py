@@ -76,6 +76,17 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
     # Change hover text background to white
     fig.update_layout(hoverlabel={'bgcolor': 'white'})
 
+    # Disable default legend click behaviors
+    fig.update_layout(
+        legend={
+            'itemclick': False,
+            'itemdoubleclick': False
+        }
+    )
+
+    # Dragging the mouse should do nothing
+    fig.update_layout(dragmode=False)
+
     return fig
 
 
@@ -204,6 +215,9 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
 
     # Change hover text background to white
     fig.update_layout(hoverlabel={'bgcolor': 'white'})
+
+    # Dragging the mouse should do nothing
+    fig.update_layout(dragmode=False)
 
     return fig
 
@@ -344,11 +358,14 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
     zoom_y = node_y[district_index]
     range = 0.2
     fig.update_layout(
-        xaxis={'range': [zoom_x - range, zoom_x + range]},
-        yaxis={'range': [zoom_y - range, zoom_y + range]}
+        xaxis={'range': [zoom_x - range, zoom_x + range], 'autorange': False},
+        yaxis={'range': [zoom_y - range, zoom_y + range], 'autorange': False}
     )
 
     # Change hover text background to white
     fig.update_layout(hoverlabel={'bgcolor': 'white'})
+
+    # Dragging with mouse should pan the graph
+    fig.update_layout(dragmode='pan')
 
     return fig

@@ -212,7 +212,19 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='grad-rate-line-chart',
-                                    figure=go.Figure()  # placeholder graph
+                                    figure=go.Figure(),  # placeholder graph
+                                    # Remove unnecessary interactive features
+                                    config={
+                                        'displaylogo': False,
+                                        'modeBarButtonsToRemove': [
+                                            'zoom', 'pan', 'select', 'zoomIn',
+                                            'zoomOut', 'autoScale',
+                                            'resetScale'
+                                        ],
+                                        'modeBarButtonsToAdd': [
+                                            'downloadJson'
+                                        ]
+                                    }
                                 )
                             ])
                             # Force card to fill ful available space
@@ -228,7 +240,19 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='gaps-dumbbell-chart',
-                                    figure=go.Figure()  # placeholder graph
+                                    figure=go.Figure(),  # placeholder graph
+                                    # Remove unnecessary interactive features
+                                    config={
+                                        'displaylogo': False,
+                                        'modeBarButtonsToRemove': [
+                                            'zoom', 'pan', 'select', 'zoomIn',
+                                            'zoomOut', 'autoScale',
+                                            'resetScale', 'lasso2d'
+                                        ],
+                                        'modeBarButtonsToAdd': [
+                                            'downloadJson'
+                                        ]
+                                    }
                                 )
                             ])
                             # Force card to fill full available space
@@ -249,7 +273,19 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='district-network-chart',
-                                    figure=go.Figure()  # placeholder graph
+                                    figure=go.Figure(),  # placeholder graph
+                                    # Remove unnecessary interactive features
+                                    config={
+                                        'displaylogo': False,
+                                        'modeBarButtonsToRemove': [
+                                            'zoom', 'select', 'lasso2d',
+                                            'autoScale'
+                                        ],
+                                        'modeBarButtonsToAdd': [
+                                            'downloadJson'
+                                        ],
+                                        'scrollZoom': True
+                                    }
                                 )
                             ])
                         ])
