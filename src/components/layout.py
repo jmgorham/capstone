@@ -82,7 +82,7 @@ def create_layout(grad_rate_df):
                             # selecting a metric for analysis
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label("Graduation rate metric:"),
+                                html.Label("Metric:"),
 
                                 # RadioItems: buttons where users select
                                 # exactly 1 option
@@ -100,7 +100,7 @@ def create_layout(grad_rate_df):
                             # COMPONENT 3: UI date range selector
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label("Time period:"),
+                                html.Label("Years:"),
 
                                 # RangeSlider is used instead of
                                 # DateRangePicker because DateRangePicker
@@ -127,7 +127,7 @@ def create_layout(grad_rate_df):
                             # COMPONENT 4: UI buttons for subgroups to include
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label('Subgroups included in analysis:'),
+                                html.Label('Subgroups:'),
 
                                 # Checklist to select any number of options
                                 dcc.Checklist(
@@ -164,7 +164,7 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Statewide Graduation Rate"),
+                                html.H6("Overall Statewide Graduation Rate"),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
                                         id="kpi-grad-rate")
@@ -208,7 +208,11 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Data Visualization 1"),
+                                html.H6("Graduation Rate Outcomes by Student "
+                                        "Demographic Subgroups, "
+                                        "Filtered by District"),
+                                html.P(html.I("Are graduation rates "
+                                              "improving over time?")),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='grad-rate-line-chart',
@@ -236,7 +240,11 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Data Visualization 2"),
+                                html.H6("Graduation Rate Gaps by Student "
+                                        "Demographic Subgroups, "
+                                        "Filtered by District"),
+                                html.P(html.I("Are gaps in student outcomes "
+                                              "narrowing over time?")),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='gaps-dumbbell-chart',
@@ -269,7 +277,11 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Data Visualization 3"),
+                                html.H6("School Districts Grouped by "
+                                        "District Characteristics"),
+                                html.P(html.I("Do similar school districts "
+                                              "have similar levels of "
+                                              "graduation rate disparity?")),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='district-network-chart',
