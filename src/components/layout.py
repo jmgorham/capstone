@@ -36,10 +36,10 @@ def create_layout(grad_rate_df):
         # ROW 1: Dashboard title and header
         dbc.Row([
             dbc.Col(
-                html.H1("Equity in Education Dashboard: Graduation Rates "
+                html.H1("Graduation Rate Equity "
                         "in New York State School Districts",
                         # className argument gives style info
-                        className="text-center my-4 text-primary"),
+                        className="text-center my-4"),
                 # Bootstrap Components divides screens into 12 columns
                 # width=12 dictates width should span full screen
                 width=12
@@ -143,7 +143,6 @@ def create_layout(grad_rate_df):
                         ], gap=4)  # gap provides vertical padding
                     ])
                 ],
-                    color="light",  # color for background of card container
                     # Force card to fill full horizontal and vertical space
                     className="h-100 w-100"
                 )

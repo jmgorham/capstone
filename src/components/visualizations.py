@@ -46,6 +46,10 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
         (grad_rate_df['year'] <= stop_year) &
         (grad_rate_df['subgroup'].isin(subgroups_to_include))]
 
+    # Define colors
+    custom_qualitative_palette = px.colors.qualitative.Prism + \
+        px.colors.qualitative.Antique[:4] + px.colors.qualitative.Antique[5:]
+
     # Build visualization
     fig = px.line(grad_rate_filtered_df, x='year', y='value', color='subgroup',
                   # Format axis labels on the chart
@@ -54,7 +58,9 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
                           'subgroup': ''},
                   category_orders={'subgroup': subgroups_sorted},
                   # hover_data allows for accessing columns in hover text
-                  hover_data=['subgroup'])
+                  hover_data=['subgroup'],
+                  # Define color scheme
+                  color_discrete_sequence=custom_qualitative_palette)
 
     # Include x-axis ticks for every year
     fig.update_xaxes(tickmode='array', tickvals=grad_rate_filtered_df['year'])
@@ -86,6 +92,9 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
 
     # Dragging the mouse should do nothing
     fig.update_layout(dragmode=False)
+
+    # Clean up style
+    fig.update_layout(template="simple_white")
 
     return fig
 
@@ -174,7 +183,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             mode='markers',
             name=str(start_year),
             showlegend=(i == 0),  # draw legend exactly once
-            marker={'color': 'green', 'size': 10},
+            marker={'color': '#408c45', 'size': 10},
             # Add hover text
             customdata=[hover_data],
             hovertemplate=hover_template
@@ -187,7 +196,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             mode='markers',
             name=str(stop_year),
             showlegend=(i == 0),  # draw legend exactly once
-            marker={'color': 'blue', 'size': 10},
+            marker={'color': '#593980', 'size': 10},
             # Add hover text
             customdata=[hover_data],
             hovertemplate=hover_template
@@ -204,7 +213,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
         legend={
             'orientation': "h",
             'yanchor': "bottom",
-            'y': -0.2,
+            'y': 1,
             'xanchor': "center",
             'x': 0.5
         }
@@ -218,6 +227,29 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
 
     # Dragging the mouse should do nothing
     fig.update_layout(dragmode=False)
+
+    # Clean up style
+    fig.update_layout(template="simple_white")
+
+    # Add vertical gridline at origin
+    fig.update_xaxes(
+        zeroline=True,
+        zerolinecolor='LightGray'
+    )
+
+    # Format x-axis values as signed integers
+    fig.update_xaxes(tickformat="+")
+
+    # Add x-axis label
+    fig.update_layout(
+        xaxis_title="Graduation Rate Gap<br>"
+        "<i>(gap = subgroup graduation rate - overall graduation rate)</i>")
+
+    # Add horizontal grid lines
+    fig.update_yaxes(
+        showgrid=True,
+        gridcolor='LightGray'
+    )
 
     return fig
 
@@ -367,5 +399,8 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
 
     # Dragging with mouse should pan the graph
     fig.update_layout(dragmode='pan')
+
+    # Clean up style
+    fig.update_layout(template="simple_white")
 
     return fig
