@@ -96,6 +96,9 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
     # Clean up style
     fig.update_layout(template="simple_white")
 
+    # Set default font for graphs
+    fig.update_layout(font={'family': 'Inter, sans-serif', 'size': 14})
+
     return fig
 
 
@@ -243,13 +246,16 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
     # Add x-axis label
     fig.update_layout(
         xaxis_title="Graduation Rate Gap<br>"
-        "<i>(gap = subgroup graduation rate - overall graduation rate)</i>")
+        "<i>(Gap = subgroup graduation rate - overall graduation rate)</i>")
 
     # Add horizontal grid lines
     fig.update_yaxes(
         showgrid=True,
         gridcolor='LightGray'
     )
+
+    # Set default font for graphs
+    fig.update_layout(font={'family': 'Inter, sans-serif', 'size': 14})
 
     return fig
 
@@ -402,5 +408,13 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
 
     # Clean up style
     fig.update_layout(template="simple_white")
+
+    # Add x-axis label
+    fig.update_layout(
+        xaxis_title="<i>Disparity = max graduation rate gap "
+        "for any subgroup within a district</i>")
+
+    # Set default font for graphs
+    fig.update_layout(font={'family': 'Inter, sans-serif', 'size': 14})
 
     return fig

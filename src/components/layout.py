@@ -8,6 +8,7 @@ interactive functionality.
 import dash_bootstrap_components as dbc
 import plotly.graph_objects as go
 from dash import dcc, html
+from dash_iconify import DashIconify
 
 import src.components.kpis as kpis
 import src.components.visualizations as viz
@@ -33,20 +34,7 @@ def create_layout(grad_rate_df):
         # Container object contains Row objects as children
         # Row objects contain Col objects as children
 
-        # ROW 1: Dashboard title and header
-        dbc.Row([
-            dbc.Col(
-                html.H1("Graduation Rate Equity "
-                        "in New York State School Districts",
-                        # className argument gives style info
-                        className="text-center my-4"),
-                # Bootstrap Components divides screens into 12 columns
-                # width=12 dictates width should span full screen
-                width=12
-            )
-        ]),
-
-        # ROW 2: Main content area
+        # ROW: Main content area
         dbc.Row([
 
             # COL 1: Sidebar for UI filters and interactive elements
@@ -56,11 +44,31 @@ def create_layout(grad_rate_df):
                         # Stack container helps with vertical padding
                         dbc.Stack([
 
+                            # Sidebar header
+                            html.Div([
+                                html.H4(
+                                    children=[
+                                        DashIconify(icon='material-symbols'
+                                                    ':data-exploration'
+                                                    '-outline-sharp',
+                                                    color='#593980'),
+                                        " Equity in Education"
+                                    ],
+                                    className='d-flex align-items-center '
+                                    'gap-2 custom-title'
+                                ),
+                                html.P('An exploratoy analytics dashboard',
+                                       className='custom-subtitle')
+                            ]),
+
+                            html.Hr(),
+
                             # COMPONENT 1: UI dropdown search bar
                             # for selecting a district
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label("School district:"),
+                                html.Label("School district:",
+                                           className='custom-title'),
 
                                 # Dropdown selector for school district
                                 dcc.Dropdown(
@@ -74,15 +82,18 @@ def create_layout(grad_rate_df):
                                     searchable=True,  # adds search bar
                                     clearable=True,  # adds 'X' to clear
                                     # Placeholder creates text hint for search
-                                    placeholder='Type to search...',
+                                    placeholder='Type to search...'
                                 )
                             ]),
+
+                            html.Hr(),
 
                             # COMPONENT 2: UI radio buttons for
                             # selecting a metric for analysis
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label("Metric:"),
+                                html.Label("Metric:",
+                                           className='custom-title'),
 
                                 # RadioItems: buttons where users select
                                 # exactly 1 option
@@ -97,10 +108,13 @@ def create_layout(grad_rate_df):
                                 )
                             ]),
 
+                            html.Hr(),
+
                             # COMPONENT 3: UI date range selector
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label("Years:"),
+                                html.Label("Years:",
+                                           className='custom-title'),
 
                                 # RangeSlider is used instead of
                                 # DateRangePicker because DateRangePicker
@@ -120,14 +134,20 @@ def create_layout(grad_rate_df):
                                     marks={year: str(year)
                                            for year in range(2020, 2026)},
                                     # Value determines default selection
-                                    value=filter_defaults['years']['value']
+                                    value=filter_defaults['years']['value'],
+                                    allowCross=False,
+                                    allow_direct_input=False,
+                                    pushable=1  # ensure years are not the same
                                 )
                             ]),
+
+                            html.Hr(),
 
                             # COMPONENT 4: UI buttons for subgroups to include
                             html.Div([
                                 # Explanatory label for UI element
-                                html.Label('Subgroups:'),
+                                html.Label('Subgroups:',
+                                           className='custom-title'),
 
                                 # Checklist to select any number of options
                                 dcc.Checklist(
@@ -139,21 +159,105 @@ def create_layout(grad_rate_df):
                                     value=filter_defaults['subgroups']['value']
                                 )
                             ])
+                        ], gap=3)  # gap provides vertical padding
+                    ]),
 
-                        ], gap=4)  # gap provides vertical padding
-                    ])
+                    # FOOTER
+                    html.Footer(
+                        children=[
+                            html.H6('Developed by Jenna Gorham, Data Analyst'),
+
+                            # Stack container to pair icon and text
+                            html.A([
+                                dbc.Stack([
+                                    DashIconify(icon='mdi:linkedin', width=16),
+                                    html.Span('LinkedIn')
+                                ], direction='horizontal',
+                                    gap=2,
+                                    className='align-items-center'
+                                )
+                            ],
+                                href='https://www.linkedin.com/in/jmgorham/',
+                                target='_blank',
+                                style={"color": "inherit",
+                                       "textDecoration": "none"}
+                            ),
+
+                            # Stack container to pair icon and text
+                            html.A([
+                                dbc.Stack([
+                                    DashIconify(icon='mdi:github', width=16),
+                                    html.Span('GitHub')
+                                ], direction='horizontal',
+                                    gap=2,
+                                    className='align-items-center'
+                                )
+                            ],
+                                href='https://github.com/jmgorham',
+                                target='_blank',
+                                style={"color": "inherit",
+                                       "textDecoration": "none"}
+                            ),
+
+                            # Stack container to pair icon and text
+                            html.A([
+                                dbc.Stack([
+                                    DashIconify(
+                                        icon='mdi:account-circle-outline',
+                                        width=16),
+                                    html.Span('Analytics Portfolio')
+                                ], direction='horizontal',
+                                    gap=2,
+                                    className='align-items-center'
+                                )
+                            ],
+                                href='https://jmgorham.github.io/portfolio/',
+                                target='_blank',
+                                style={"color": "inherit",
+                                       "textDecoration": "none"}
+                            ),
+
+                            html.Br(),
+
+                            # Link to data source
+                            html.Span(
+                                'Data from the New York State '
+                                'Education Department: '),
+                            html.A('data.nysed.gov',
+                                   href='https://data.nysed.gov/',
+                                   target='_blank',
+                                   style={"color": "inherit"})
+
+                        ],
+                        className='mt-auto pt-3 border-top text-muted '
+                        'card-footer'
+                    )
+
                 ],
                     # Force card to fill full horizontal and vertical space
-                    className="h-100 w-100"
+                    className="h-100 w-100 custom-sidebar-card"
                 )
             ],
-                width=3,  # sidebar fills 3 columns, or 1/4 of screen width'
+                width=2,  # sidebar fills 2 columns, or 1/6 of screen width'
                 # Stretch column container vertically as a flex container
-                className="d-flex mb-4"
+                className="d-flex"
             ),
 
             # COL 2: Main content for core dashboard visualizations
             dbc.Col([
+
+                # ROW 0: Dashboard title and header
+                dbc.Row([
+                    dbc.Col(
+                        html.H1("Graduation Rate Equity "
+                                "in New York State School Districts",
+                                # className argument gives style info
+                                className="text-center my-4 custom-title"),
+                        # Bootstrap Components divides screens into 12 columns
+                        # width=12 dictates width should span full screen
+                        width=12
+                    )
+                ]),
 
                 # ROW 1: 3 KPI tiles
                 dbc.Row([
@@ -163,10 +267,12 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Overall Statewide Graduation Rate"),
+                                html.H6("Overall Statewide Graduation Rate",
+                                        className='custom-title'),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
-                                        id="kpi-grad-rate")
+                                        id="kpi-grad-rate",
+                                        className='custom-kpi')
                             ])
                         ])
                     ]),
@@ -176,10 +282,12 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Median Graduation Rate Disparity"),
+                                html.H6("Median Graduation Rate Disparity",
+                                        className='custom-title'),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
-                                        id="kpi-disparity")
+                                        id="kpi-disparity",
+                                        className='custom-kpi')
                             ])
                         ])
                     ]),
@@ -189,10 +297,12 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Districts Improving Disparity"),
+                                html.H6("Districts Improving Disparity",
+                                        className='custom-title'),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
-                                        id="kpi-pct-improving")
+                                        id="kpi-pct-improving",
+                                        className='custom-kpi')
 
                             ])
                         ])
@@ -209,9 +319,11 @@ def create_layout(grad_rate_df):
                             dbc.CardBody([
                                 html.H6("Graduation Rate Outcomes by Student "
                                         "Demographic Subgroups, "
-                                        "Filtered by District"),
-                                html.P(html.I("Are graduation rates "
-                                              "improving over time?")),
+                                        "Filtered by District",
+                                        className='custom-title'),
+                                html.P("Are graduation rates "
+                                       "improving over time?",
+                                       className='custom-subtitle'),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='grad-rate-line-chart',
@@ -241,9 +353,11 @@ def create_layout(grad_rate_df):
                             dbc.CardBody([
                                 html.H6("Graduation Rate Gaps by Student "
                                         "Demographic Subgroups, "
-                                        "Filtered by District"),
-                                html.P(html.I("Are gaps in student outcomes "
-                                              "narrowing over time?")),
+                                        "Filtered by District",
+                                        className='custom-title'),
+                                html.P("Are gaps in student outcomes "
+                                       "narrowing over time?",
+                                       className='custom-subtitle'),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='gaps-dumbbell-chart',
@@ -277,10 +391,12 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 html.H6("School Districts Grouped by "
-                                        "District Characteristics"),
-                                html.P(html.I("Do similar school districts "
-                                              "have similar levels of "
-                                              "graduation rate disparity?")),
+                                        "District Characteristics",
+                                        className='custom-title'),
+                                html.P("Do similar school districts "
+                                       "have similar levels of "
+                                       "graduation rate disparity?",
+                                       className='custom-subtitle'),
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='district-network-chart',
@@ -304,16 +420,17 @@ def create_layout(grad_rate_df):
                 ])
 
             ],
-                width=9,  # main body takes up 9 columns or 3/4 of screen
-                className="mb-4"  # add vertical padding at bottom
+                width=10,  # main body takes up 10 columns or 5/6 of screen
+                className="mb-4 px-4"  # add horizontal and vertical padding
             )
 
         ],
             # Keep both columsn the same height
             # Change overall height based on Container constraints
-            className="flex-grow-1 align-items-stretch"
+            className="flex-grow-1 align-items-stretch g-0"
         )
     ],
+        style={'padding': 0},
         fluid=True  # container stretches to fill entire width of screen]
     )
 

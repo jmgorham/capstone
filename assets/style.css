@@ -1,9 +1,69 @@
-body {
-    background-color: #d6d2cf;
-    margin: 0;
-    padding: 0;
+/* Define theme colors once */
+:root {
+    --bg-light: #eae9e7;
+    --bg-med: #c1bcb7;
+    --text-brown: #311e10;
+    --text-purple: #593980;
+    --lines: #988f88;
 }
 
-h1 {
-    color: #311e10;
+/* Set background color for page and remove padding */
+body {
+    background-color: var(--bg-light);
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Title elements in bold coffee-brown text */
+.custom-title {
+    color: var(--text-brown);
+    font-weight: bold;
+    font-family: 'Lora', serif;
+}
+
+/* Subtitlte elements in italics */
+.custom-subtitle {
+    font-style: italic; 
+}
+
+/* KPI text element styling */
+.custom-kpi {
+    color: var(--text-purple);
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Darker background for sidebar card */
+.custom-sidebar-card {
+    background-color: var(--bg-med) !important;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Set accent color for DCC UI components */
+:root {
+    --Dash-Fill-Interactive-Strong: var(--text-purple)
+}
+
+/* Set border color for Dash Bootstrap Components */
+:root {
+  --bs-border-color: var(--lines) !important;
+}
+
+/* Set border color for plain Dash and HTML components */
+*, *::before, *::after {
+  border-color: var(--lines) !important;
+}
+
+/* Target all html.Hr() components */
+hr {
+    border: none;
+    border-top: 1px solid var(--lines) !important;
+    opacity: 1;
+}
+
+.card-footer {
+    margin-top: auto;
 }
