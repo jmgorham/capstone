@@ -24,7 +24,7 @@ def get_statewide_grad_rate(grad_rate_df, metric, year):
         year (int): year of focus for graduation rate analysis
 
     Returns:
-        float: overall statewide graduation rate
+        string: overall statewide graduation rate, formatted for visualization
     """
     # Filter data
     grad_rate_df_filtered = grad_rate_df[
@@ -38,7 +38,10 @@ def get_statewide_grad_rate(grad_rate_df, metric, year):
     # Extract overall graduation rate from filtered data
     overall_grad_rate = grad_rate_df_filtered['value'].item()
 
-    return overall_grad_rate
+    # Format for visualization
+    overall_grad_rate_kpi_string = f'{overall_grad_rate:.1f}%'
+
+    return overall_grad_rate_kpi_string
 
 
 def get_median_grad_rate_disparity(grad_rate_df, metric, year, subgroups):
@@ -54,7 +57,7 @@ def get_median_grad_rate_disparity(grad_rate_df, metric, year, subgroups):
         subgroups (list<string>): demographic subgroups of focus for analysis
 
     Returns:
-        float: overall statewide graduation rate
+        string: overall statewide graduation rate, formatted for visualization
     """
     # Filter by subgroups, including 'All Students' as a baseline
     subgroups_to_include = subgroups + ['All Students']
@@ -68,14 +71,18 @@ def get_median_grad_rate_disparity(grad_rate_df, metric, year, subgroups):
     # Determine district-level median disparity
     median_grad_rate_disparity = district_disparity_df['disparity'].median()
 
-    return median_grad_rate_disparity
+    # Format for visualization
+    median_grad_rate_disparity_kpi_string = \
+        f'{median_grad_rate_disparity:.1f}pp'
+
+    return median_grad_rate_disparity_kpi_string
 
 
 def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
                                           stop_year, subgroups):
     """Calculate the percentage of districts reducing grad rate disparities.
 
-    This metric is not impacted by selections of district. It is a state-level 
+    This metric is not impacted by selections of district. It is a state-level
     aggregate.
 
     Args:
@@ -86,7 +93,8 @@ def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
         subgroups (list<string>): demographic subgroups of focus for analysis
 
     Returns:
-        float: percentage of school districts improving disparities
+        string: percentage of school districts improving disparities,
+            formatted for visualization
     """
     # Filter by subgroups, including 'All Students' as a baseline
     subgroups_to_include = subgroups + ['All Students']
@@ -119,4 +127,7 @@ def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
     # time interval, and is therefore improving
     pct_improving = (disparity_change_df['change'] < 0).mean() * 100
 
-    return pct_improving
+    # Format for visualization
+    pct_improving_kpi_string = f'{pct_improving:.1f}%'
+
+    return pct_improving_kpi_string

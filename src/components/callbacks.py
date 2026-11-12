@@ -5,7 +5,7 @@ including KPI tiles and data visualizations, whenever the relevant UI filter
 selections are changed.
 """
 
-from dash import Input, Output, callback, no_update
+from dash import Input, Output, callback, no_update, exceptions
 
 import src.components.visualizations as viz
 from src.components import kpis
@@ -17,7 +17,8 @@ from src.utils.sample_data import get_sample_grad_rate_data
 @callback(
     Output(component_id='kpi-grad-rate', component_property='children'),
     Input(component_id='metric-select-radio', component_property='value'),
-    Input(component_id='year-range-select', component_property='value')
+    Input(component_id='year-range-select', component_property='value'),
+    prevent_initial_call=True
 )
 def update_statewide_grad_rate_kpi(metric, year_range):
     """Callback to update statewide graduation rate KPI tile.
@@ -29,6 +30,10 @@ def update_statewide_grad_rate_kpi(metric, year_range):
     Returns:
         string: formatted KPI text value for statewide graduation rate    
     """
+    # Input validation and error handling
+    if metric is None or year_range is None:
+        raise exceptions.PreventUpdate
+
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -36,11 +41,8 @@ def update_statewide_grad_rate_kpi(metric, year_range):
     year = year_range[1]
 
     # Calculate KPI overall statewide grad rate
-    overall_grad_rate = kpis.get_statewide_grad_rate(
+    overall_grad_rate_kpi_string = kpis.get_statewide_grad_rate(
         grad_rate_df, metric, year)
-
-    # Format as string
-    overall_grad_rate_kpi_string = f'{overall_grad_rate:.1f}%'
 
     return overall_grad_rate_kpi_string
 
@@ -51,7 +53,9 @@ def update_statewide_grad_rate_kpi(metric, year_range):
     Output(component_id='kpi-disparity', component_property='children'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
-    Input(component_id='subgroup-select-checklist', component_property='value')
+    Input(component_id='subgroup-select-checklist',
+          component_property='value'),
+    prevent_initial_call=True
 )
 def update_median_disparity_kpi(metric, year_range, subgroups):
     """Callback to update median graduation rate disparity KPI tile.
@@ -64,6 +68,10 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
     Returns:
         string: formatted KPI text value for median graduation rate disparity
     """
+    # Input validation and error handling
+    if metric is None or year_range is None or subgroups is None:
+        raise exceptions.PreventUpdate
+
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -71,11 +79,8 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
     year = year_range[1]
 
     # Calculate KPI median grad rate disparity
-    median_grad_rate_disparity = kpis.get_median_grad_rate_disparity(
+    median_disparity_kpi_string = kpis.get_median_grad_rate_disparity(
         grad_rate_df, metric, year, subgroups)
-
-    # Format as string
-    median_disparity_kpi_string = f'{median_grad_rate_disparity:.1f}pp'
 
     return median_disparity_kpi_string
 
@@ -86,7 +91,9 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
     Output(component_id='kpi-pct-improving', component_property='children'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
-    Input(component_id='subgroup-select-checklist', component_property='value')
+    Input(component_id='subgroup-select-checklist',
+          component_property='value'),
+    prevent_initial_call=True
 )
 def update_districts_improving_kpi(metric, year_range, subgroups):
     """Callback to update percent of districts improving disparity KPI tile.
@@ -99,6 +106,10 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
     Returns:
         string: formatted KPI text value for percent of districts improving
     """
+    # Input validation and error handling
+    if metric is None or year_range is None or subgroups is None:
+        raise exceptions.PreventUpdate
+
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -107,11 +118,8 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
     stop_year = year_range[1]
 
     # Calculate KPI pct districts improving disparity
-    pct_improving = kpis.get_pct_districts_improving_disparity(
+    pct_improving_kpi_string = kpis.get_pct_districts_improving_disparity(
         grad_rate_df, metric, start_year, stop_year, subgroups)
-
-    # Format as string
-    pct_improving_kpi_string = f'{pct_improving:.1f}%'
 
     return pct_improving_kpi_string
 
@@ -123,7 +131,9 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
     Input(component_id='district-select-dropdown', component_property='value'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
-    Input(component_id='subgroup-select-checklist', component_property='value')
+    Input(component_id='subgroup-select-checklist',
+          component_property='value'),
+    prevent_initial_call=True
 )
 def update_grad_rate_line_chart(district, metric, year_range, subgroups):
     """Callback to update graduation rate over time line chart figure.
@@ -137,6 +147,11 @@ def update_grad_rate_line_chart(district, metric, year_range, subgroups):
     Returns:
         Figure: Plotly figure displaying graduation rate over time line chart
     """
+    # Input validation and error handling
+    if district is None or metric is None or \
+            year_range is None or subgroups is None:
+        raise exceptions.PreventUpdate
+
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -158,7 +173,9 @@ def update_grad_rate_line_chart(district, metric, year_range, subgroups):
     Input(component_id='district-select-dropdown', component_property='value'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
-    Input(component_id='subgroup-select-checklist', component_property='value')
+    Input(component_id='subgroup-select-checklist',
+          component_property='value'),
+    prevent_initial_call=True
 )
 def update_gaps_dumbbell_chart(district, metric, year_range, subgroups):
     """Callback to update graduation gaps over time dumbbell chart figure.
@@ -172,6 +189,11 @@ def update_gaps_dumbbell_chart(district, metric, year_range, subgroups):
     Returns:
         Figure: Plotly figure displaying graduation gaps dumbbell chart
     """
+    # Input validation and error handling
+    if district is None or metric is None or \
+            year_range is None or subgroups is None:
+        raise exceptions.PreventUpdate
+
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 
@@ -193,7 +215,9 @@ def update_gaps_dumbbell_chart(district, metric, year_range, subgroups):
     Input(component_id='district-select-dropdown', component_property='value'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
-    Input(component_id='subgroup-select-checklist', component_property='value')
+    Input(component_id='subgroup-select-checklist',
+          component_property='value'),
+    prevent_initial_call=True
 )
 def update_districts_network_chart(district, metric, year_range, subgroups):
     """Callback to update districts adjacency network chart figure.
@@ -207,6 +231,11 @@ def update_districts_network_chart(district, metric, year_range, subgroups):
     Returns:
         Figure: Plotly figure displaying districts adjacency network
     """
+    # Input validation and error handling
+    if district is None or metric is None or \
+            year_range is None or subgroups is None:
+        raise exceptions.PreventUpdate
+
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
 

@@ -29,6 +29,57 @@ def create_layout(grad_rate_df):
     # JSON-like dictionary data with default settings
     filter_defaults = initialize_filters(grad_rate_df)
 
+    # Use defaults to calculate KPIs
+
+    kpi_statewide_grad_rate = kpis.get_statewide_grad_rate(
+        grad_rate_df,
+        filter_defaults['metrics']['value'],
+        filter_defaults['years']['value'][1]
+    )
+
+    kpi_median_disparity = kpis.get_median_grad_rate_disparity(
+        grad_rate_df,
+        filter_defaults['metrics']['value'],
+        filter_defaults['years']['value'][1],
+        filter_defaults['subgroups']['value']
+    )
+
+    kpi_pct_improving = kpis.get_pct_districts_improving_disparity(
+        grad_rate_df,
+        filter_defaults['metrics']['value'],
+        filter_defaults['years']['value'][0],
+        filter_defaults['years']['value'][1],
+        filter_defaults['subgroups']['value']
+    )
+
+    # Use defaults to create initial visualizations
+    viz_line_chart = viz.get_grad_rate_line_chart(
+        grad_rate_df,
+        filter_defaults['districts']['value'],
+        filter_defaults['metrics']['value'],
+        filter_defaults['years']['value'][0],
+        filter_defaults['years']['value'][1],
+        filter_defaults['subgroups']['value']
+    )
+
+    viz_dumbbell_chart = viz.get_disparity_dumbbell_chart(
+        grad_rate_df,
+        filter_defaults['districts']['value'],
+        filter_defaults['metrics']['value'],
+        filter_defaults['years']['value'][0],
+        filter_defaults['years']['value'][1],
+        filter_defaults['subgroups']['value']
+    )
+
+    viz_network_chart = viz.get_districts_network_chart(
+        grad_rate_df,
+        filter_defaults['districts']['value'],
+        filter_defaults['metrics']['value'],
+        filter_defaults['years']['value'][0],
+        filter_defaults['years']['value'][1],
+        filter_defaults['subgroups']['value']
+    )
+
     # Build dashboard layout
     layout = dbc.Container([
         # Container object contains Row objects as children
@@ -270,7 +321,7 @@ def create_layout(grad_rate_df):
                                 html.H5("Overall Statewide Graduation Rate",
                                         className='custom-title'),
                                 # KPI value, handled by callbacks
-                                html.H2('',  # placeholder dummy value
+                                html.H2(kpi_statewide_grad_rate,
                                         id="kpi-grad-rate",
                                         className='custom-kpi')
                             ])
@@ -285,7 +336,7 @@ def create_layout(grad_rate_df):
                                 html.H5("Median Graduation Rate Disparity",
                                         className='custom-title'),
                                 # KPI value, handled by callbacks
-                                html.H2('',  # placeholder dummy value
+                                html.H2(kpi_median_disparity,
                                         id="kpi-disparity",
                                         className='custom-kpi')
                             ])
@@ -300,7 +351,7 @@ def create_layout(grad_rate_df):
                                 html.H5("Districts Improving Disparity",
                                         className='custom-title'),
                                 # KPI value, handled by callbacks
-                                html.H2('',  # placeholder dummy value
+                                html.H2(kpi_pct_improving,
                                         id="kpi-pct-improving",
                                         className='custom-kpi')
 
@@ -327,7 +378,7 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='grad-rate-line-chart',
-                                    figure=go.Figure(),  # placeholder graph
+                                    figure=viz_line_chart,
                                     # Remove unnecessary interactive features
                                     config={
                                         'displaylogo': False,
@@ -361,7 +412,7 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='gaps-dumbbell-chart',
-                                    figure=go.Figure(),  # placeholder graph
+                                    figure=viz_dumbbell_chart,
                                     # Remove unnecessary interactive features
                                     config={
                                         'displaylogo': False,
@@ -400,7 +451,7 @@ def create_layout(grad_rate_df):
                                 dcc.Graph(
                                     # Graph ID for callbacks
                                     id='district-network-chart',
-                                    figure=go.Figure(),  # placeholder graph
+                                    figure=viz_network_chart,
                                     # Remove unnecessary interactive features
                                     config={
                                         'displaylogo': False,
