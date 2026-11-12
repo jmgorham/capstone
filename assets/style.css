@@ -59,12 +59,7 @@ hr {
     margin-top: auto;
 }
 
-
-
-
-/**/
-
-/* Apply to all Dash 4 components, or replace :root with #your-dropdown-id */
+/* Styling for all Dash 4 components */
 :root {
     /* Dropdown box & menu background */
     --Dash-Fill-Inverse-Strong: var(--bg-light) !important;
