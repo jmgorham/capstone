@@ -57,8 +57,8 @@ def create_layout(grad_rate_df):
                                     className='d-flex align-items-center '
                                     'gap-2 custom-title'
                                 ),
-                                html.P('An exploratoy analytics dashboard',
-                                       className='custom-subtitle')
+                                html.Div('An exploratoy analytics dashboard',
+                                         className='custom-subtitle')
                             ]),
 
                             html.Hr(),
@@ -267,7 +267,7 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Overall Statewide Graduation Rate",
+                                html.H5("Overall Statewide Graduation Rate",
                                         className='custom-title'),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
@@ -282,7 +282,7 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Median Graduation Rate Disparity",
+                                html.H5("Median Graduation Rate Disparity",
                                         className='custom-title'),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
@@ -297,7 +297,7 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H6("Districts Improving Disparity",
+                                html.H5("Districts Improving Disparity",
                                         className='custom-title'),
                                 # KPI value, handled by callbacks
                                 html.H2('',  # placeholder dummy value
@@ -317,7 +317,7 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Graduation Rate Outcomes by Student "
+                                html.H5("Graduation Rate Outcomes by Student "
                                         "Demographic Subgroups, "
                                         "Filtered by District",
                                         className='custom-title'),
@@ -351,7 +351,7 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("Graduation Rate Gaps by Student "
+                                html.H5("Graduation Rate Gaps by Student "
                                         "Demographic Subgroups, "
                                         "Filtered by District",
                                         className='custom-title'),
@@ -390,7 +390,7 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H6("School Districts Grouped by "
+                                html.H5("School Districts Grouped by "
                                         "District Characteristics",
                                         className='custom-title'),
                                 html.P("Do similar school districts "

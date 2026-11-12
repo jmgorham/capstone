@@ -42,16 +42,6 @@ body {
     flex-direction: column;
 }
 
-/* Set accent color for DCC UI components */
-:root {
-    --Dash-Fill-Interactive-Strong: var(--text-purple)
-}
-
-/* Set border color for Dash Bootstrap Components */
-:root {
-  --bs-border-color: var(--lines) !important;
-}
-
 /* Set border color for plain Dash and HTML components */
 *, *::before, *::after {
   border-color: var(--lines) !important;
@@ -64,6 +54,28 @@ hr {
     opacity: 1;
 }
 
+/* Force footers to sit at the bottom of the card */
 .card-footer {
     margin-top: auto;
 }
+
+
+
+
+/**/
+
+/* Apply to all Dash 4 components, or replace :root with #your-dropdown-id */
+:root {
+    /* Dropdown box & menu background */
+    --Dash-Fill-Inverse-Strong: var(--bg-light) !important;
+
+    /* Border colors */
+    --Dash-Stroke-Strong: var(--lines) !important;
+    --Dash-Stroke-Weak: var(--lines) !important;
+
+    --Dash-Fill-Interactive-Strong: var(--text-purple) !important;
+
+    --bs-border-color: var(--lines) !important;
+}
+
+

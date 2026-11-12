@@ -7,6 +7,7 @@ on the dashboard in order to communicate with data effectively.
 import networkx as nx
 import plotly.express as px
 import plotly.graph_objects as go
+import plotly.colors as pc
 import numpy as np
 import pandas as pd
 
@@ -62,14 +63,23 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
                   # Define color scheme
                   color_discrete_sequence=custom_qualitative_palette)
 
-    # Include x-axis ticks for every year
-    fig.update_xaxes(tickmode='array', tickvals=grad_rate_filtered_df['year'])
+    # Configure x axis
+    fig.update_xaxes(
+        # Force x-axis ticks for every year
+        tickmode='linear',
+        tick0=start_year,
+        dtick=1
+    )
 
-    # Constrain height of visualization
-    fig.update_layout(height=500)
-
-    # Remove whitespace padding from graph margins
-    fig.update_layout(margin={'l': 0, 'r': 0, 't': 0, 'b': 0})
+    # Manually draw grid lines
+    for year in range(start_year, stop_year):
+        fig.add_vline(
+            x=year,
+            line_width=1,
+            line_color='LightGray',
+            layer='below',
+            opacity=1
+        )
 
     # Set custom hover text
     fig.update_traces(
@@ -79,25 +89,17 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
         '<extra></extra>'
     )
 
-    # Change hover text background to white
-    fig.update_layout(hoverlabel={'bgcolor': 'white'})
-
-    # Disable default legend click behaviors
+    # Configure layout
     fig.update_layout(
-        legend={
-            'itemclick': False,
-            'itemdoubleclick': False
-        }
+        height=500,  # constrain graph height
+        margin={'l': 0, 'r': 0, 't': 0, 'b': 0},  # remove whitespace padding
+        dragmode=False,  # dragging the mouse should do nothing
+        template='simple_white',  # apply minimalist visual style
+        font={'family': 'Inter, sans-serif', 'size': 14},  # default font
+        hoverlabel={  # configure hover text with font and white background
+            'font': {'family': 'Inter, sans-serif', 'size': 14},
+            'bgcolor': 'white'}
     )
-
-    # Dragging the mouse should do nothing
-    fig.update_layout(dragmode=False)
-
-    # Clean up style
-    fig.update_layout(template="simple_white")
-
-    # Set default font for graphs
-    fig.update_layout(font={'family': 'Inter, sans-serif', 'size': 14})
 
     return fig
 
@@ -205,57 +207,53 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             hovertemplate=hover_template
         ))
 
-    # Constrain height of visualization
-    fig.update_layout(
-        height=500,
-        legend_itemclick=False
+    # Configure x axis
+    fig.update_xaxes(
+        # zeroline=True,  # add vertical grid line at origin
+        # zerolinecolor='LightGray',
+        tickformat='+'  # format x-axis tick values as signed integers
     )
 
-    # Set legend to bottom center of chart
+    # Manually draw vertical line at x = 0
+    fig.add_vline(
+        x=0,
+        line_width=1,
+        line_color='LightGray',
+        opacity=1,
+        layer='below'
+    )
+
+    # Manually draw horizontal grid lines
+    for subgroup in subgroups_sorted:
+        fig.add_hline(
+            y=subgroup,
+            line_width=1,
+            line_color='LightGray',
+            opacity=1,
+            layer='below'
+        )
+
+    # Configure graph layout
     fig.update_layout(
-        legend={
+        height=500,  # constrain height
+        legend_itemclick=False,
+        legend={  # define legend position
             'orientation': "h",
             'yanchor': "bottom",
             'y': 1,
             'xanchor': "center",
             'x': 0.5
-        }
+        },
+        margin={'l': 0, 'r': 0, 't': 0, 'b': 0},  # remove whitespace padding
+        dragmode=False,  # dragging the mouse should do nothing
+        template='simple_white',  # minimalist visual style
+        xaxis_title="Graduation Rate Gap<br>"  # add x-axis text label
+        "<i>(Gap = subgroup graduation rate - overall graduation rate)</i>",
+        font={'family': 'Inter, sans-serif', 'size': 14},  # default font
+        hoverlabel={  # configure hover text with font and white background
+            'font': {'family': 'Inter, sans-serif', 'size': 14},
+            'bgcolor': 'white'}
     )
-
-    # Remove whitespace padding from graph margins
-    fig.update_layout(margin={'l': 0, 'r': 0, 't': 0, 'b': 0})
-
-    # Change hover text background to white
-    fig.update_layout(hoverlabel={'bgcolor': 'white'})
-
-    # Dragging the mouse should do nothing
-    fig.update_layout(dragmode=False)
-
-    # Clean up style
-    fig.update_layout(template="simple_white")
-
-    # Add vertical gridline at origin
-    fig.update_xaxes(
-        zeroline=True,
-        zerolinecolor='LightGray'
-    )
-
-    # Format x-axis values as signed integers
-    fig.update_xaxes(tickformat="+")
-
-    # Add x-axis label
-    fig.update_layout(
-        xaxis_title="Graduation Rate Gap<br>"
-        "<i>(Gap = subgroup graduation rate - overall graduation rate)</i>")
-
-    # Add horizontal grid lines
-    fig.update_yaxes(
-        showgrid=True,
-        gridcolor='LightGray'
-    )
-
-    # Set default font for graphs
-    fig.update_layout(font={'family': 'Inter, sans-serif', 'size': 14})
 
     return fig
 
@@ -343,6 +341,11 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
         'Disparity = max grad rate gap for any subgroup' + \
         '<extra></extra>'
 
+    # Define custom color scale
+    viridis_scale = pc.sequential.Viridis
+    custom_continuous_palette = viridis_scale[: int(
+        len(viridis_scale) * 0.875)]
+
     # Draw edges
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
@@ -356,7 +359,7 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
         mode='markers',
         marker={
             'showscale': True,
-            'colorscale': 'Viridis',
+            'colorscale': custom_continuous_palette,
             'color': [],
             'size': 10,
             'colorbar': {
@@ -390,31 +393,55 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
                            'showticklabels': False}),
                     )
 
-    # Zoom in on the selected school district
+    # Configure x axis
+    fig.update_xaxes(
+        # Hide ticks along the x axis
+        showticklabels=False,
+        ticks=""
+    )
+
+    # Configure y axis
+    fig.update_yaxes(
+        # Hide ticks along the y axis
+        showticklabels=False,
+        ticks=""
+    )
+
+    # Manually add vertical line at y-axis
+    fig.add_shape(
+        type='line',
+        xref='paper',
+        yref='paper',
+        x0=0,
+        x1=0,
+        y0=0,
+        y1=1,
+        line={'color': 'black', 'width': 1},
+        layer='above',
+        opacity=1
+    )
+
+    # Math for zooming in on a selected district
     district_index = node_districts.index(district)
     zoom_x = node_x[district_index]
     zoom_y = node_y[district_index]
     range = 0.2
+
+    # Configure graph layout
     fig.update_layout(
+        # Zoom logic
         xaxis={'range': [zoom_x - range, zoom_x + range], 'autorange': False},
-        yaxis={'range': [zoom_y - range, zoom_y + range], 'autorange': False}
-    )
-
-    # Change hover text background to white
-    fig.update_layout(hoverlabel={'bgcolor': 'white'})
-
-    # Dragging with mouse should pan the graph
-    fig.update_layout(dragmode='pan')
-
-    # Clean up style
-    fig.update_layout(template="simple_white")
-
-    # Add x-axis label
-    fig.update_layout(
+        yaxis={'range': [zoom_y - range, zoom_y + range], 'autorange': False},
+        dragmode='pan',  # dragging with mouse should pan the graph
+        template='simple_white',  # minimalist visual style
+        # Add x-axis label text
         xaxis_title="<i>Disparity = max graduation rate gap "
-        "for any subgroup within a district</i>")
-
-    # Set default font for graphs
-    fig.update_layout(font={'family': 'Inter, sans-serif', 'size': 14})
+        "for any subgroup within a district</i>",
+        font={'family': 'Inter, sans-serif', 'size': 14},  # default font
+        hoverlabel={  # configure hover text font and white background
+            'font': {'family': 'Inter, sans-serif', 'size': 14},
+            'bgcolor': 'white'
+        }
+    )
 
     return fig
