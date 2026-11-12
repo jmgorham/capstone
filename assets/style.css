@@ -2,6 +2,8 @@
 :root {
     --bg-light: #eae9e7;
     --bg-med: #c1bcb7;
+    --bg-med-light: #d6d2cf;
+    --bg-dark: #27180d;
     --text-brown: #311e10;
     --text-purple: #593980;
     --lines: #988f88;
@@ -12,6 +14,10 @@ body {
     background-color: var(--bg-light);
     margin: 0;
     padding: 0;
+}
+
+/* Set global font */
+body, input, button, select, textarea {
     font-family: 'Inter', sans-serif;
 }
 
@@ -32,6 +38,11 @@ body {
     color: var(--text-purple);
     font-weight: bold;
     text-align: center;
+}
+
+/* Styling for KPI card elements */
+.custom-kpi-tile {
+    background-color: var(--bg-med-light);
 }
 
 /* Darker background for sidebar card */
@@ -73,4 +84,14 @@ hr {
     --bs-border-color: var(--lines) !important;
 }
 
+/* Change tooltip body background and text color */
+.tooltip-inner {
+    background-color: var(--bg-dark) !important;
+    color: white !important;
+}
+
+/* Change tooltip arrow color */
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: var(--bg-dark) !important;
+}
 

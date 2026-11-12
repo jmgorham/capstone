@@ -131,3 +131,41 @@ def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
     pct_improving_kpi_string = f'{pct_improving:.1f}%'
 
     return pct_improving_kpi_string
+
+
+def get_statewide_grad_rate_kpi_title(year):
+    """Format a text title for the KPI statewide graduation rate.
+
+    Args:
+        year (int): year of focus for analysis
+
+    Returns:
+        string: formatted title
+    """
+    return f'Overall Statewide Graduation Rate ({year})'
+
+
+def get_median_grad_rate_disparity_kpi_title(year):
+    """Format a text title for the KPI median graduation rate disparity.
+
+    Args:
+        year (int): year of focus for analysis
+
+    Returns:
+        string: formatted title
+    """
+    return f'Median Graduation Rate Disparity ({year})'
+
+
+def get_pct_improving_kpi_title(start_year, stop_year):
+    """Format a text title for the KPI percent districts improving disparity.
+
+    Args:
+        start_year (int): beginning of year range for analysis
+        stop_year (int): end of year range for analysis
+
+    Returns:
+        string: formatted title
+    """
+    return f'Districts which are Reducing Disparity \
+        ({start_year} - {stop_year})'

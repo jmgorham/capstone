@@ -16,6 +16,7 @@ from src.utils.sample_data import get_sample_grad_rate_data
 # Trigger when metric selection or year selection is changed
 @callback(
     Output(component_id='kpi-grad-rate', component_property='children'),
+    Output(component_id='kpi-grad-rate-title', component_property='children'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
     prevent_initial_call=True
@@ -28,7 +29,8 @@ def update_statewide_grad_rate_kpi(metric, year_range):
         year_range (list[int, int]): range of years included in analysis
 
     Returns:
-        string: formatted KPI text value for statewide graduation rate    
+        string: formatted KPI text value for statewide graduation rate
+        string: descriptive title for KPI including the year
     """
     # Input validation and error handling
     if metric is None or year_range is None:
@@ -44,13 +46,17 @@ def update_statewide_grad_rate_kpi(metric, year_range):
     overall_grad_rate_kpi_string = kpis.get_statewide_grad_rate(
         grad_rate_df, metric, year)
 
-    return overall_grad_rate_kpi_string
+    # Format KPI title
+    kpi_title = kpis.get_statewide_grad_rate_kpi_title(year)
+
+    return overall_grad_rate_kpi_string, kpi_title
 
 
 # Update KPI 2: Median Graduation Rate Disparity
 # Trigger when metric, year, or subgroup selection is changed
 @callback(
     Output(component_id='kpi-disparity', component_property='children'),
+    Output(component_id='kpi-disparity-title', component_property='children'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
     Input(component_id='subgroup-select-checklist',
@@ -67,6 +73,7 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
 
     Returns:
         string: formatted KPI text value for median graduation rate disparity
+        string: descriptive title for KPI including the year
     """
     # Input validation and error handling
     if metric is None or year_range is None or subgroups is None:
@@ -82,13 +89,18 @@ def update_median_disparity_kpi(metric, year_range, subgroups):
     median_disparity_kpi_string = kpis.get_median_grad_rate_disparity(
         grad_rate_df, metric, year, subgroups)
 
-    return median_disparity_kpi_string
+    # Format KPI title
+    kpi_title = kpis.get_median_grad_rate_disparity_kpi_title(year)
+
+    return median_disparity_kpi_string, kpi_title
 
 
 # Update KPI 3: Districts Improving Disparity
 # Trigger when metric, year, or subgroup selection is changed
 @callback(
     Output(component_id='kpi-pct-improving', component_property='children'),
+    Output(component_id='kpi-pct-improving-title',
+           component_property='children'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
     Input(component_id='subgroup-select-checklist',
@@ -105,6 +117,7 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
 
     Returns:
         string: formatted KPI text value for percent of districts improving
+        string: descriptive title for KPI including the year
     """
     # Input validation and error handling
     if metric is None or year_range is None or subgroups is None:
@@ -121,13 +134,19 @@ def update_districts_improving_kpi(metric, year_range, subgroups):
     pct_improving_kpi_string = kpis.get_pct_districts_improving_disparity(
         grad_rate_df, metric, start_year, stop_year, subgroups)
 
-    return pct_improving_kpi_string
+    # Format KPI title
+    kpi_title = kpis.get_pct_improving_kpi_title(
+        start_year, stop_year)
+
+    return pct_improving_kpi_string, kpi_title
 
 
 # Update Data Visualization 1: Line Chart, Grad Rates over Time
 # Trigger when district, metric, year, or subgroup selection is changed
 @callback(
     Output(component_id='grad-rate-line-chart', component_property='figure'),
+    Output(component_id='grad-rate-line-chart-title',
+           component_property='children'),
     Input(component_id='district-select-dropdown', component_property='value'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
@@ -163,13 +182,18 @@ def update_grad_rate_line_chart(district, metric, year_range, subgroups):
     line_chart_fig = viz.get_grad_rate_line_chart(
         grad_rate_df, district, metric, start_year, stop_year, subgroups)
 
-    return line_chart_fig
+    # Get formatted chart title
+    chart_title = viz.get_line_chart_title(district)
+
+    return line_chart_fig, chart_title
 
 
 # Update Data Visualization 2: Dumbbell Chart, Gaps over Time
 # Trigger when district, metric, year, or subgroup selection is changed
 @callback(
     Output(component_id='gaps-dumbbell-chart', component_property='figure'),
+    Output(component_id='gaps-dumbbell-chart-title',
+           component_property='children'),
     Input(component_id='district-select-dropdown', component_property='value'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
@@ -205,13 +229,18 @@ def update_gaps_dumbbell_chart(district, metric, year_range, subgroups):
     dumbbell_chart_fig = viz.get_disparity_dumbbell_chart(
         grad_rate_df, district, metric, start_year, stop_year, subgroups)
 
-    return dumbbell_chart_fig
+    # Get formatted chart title
+    chart_title = viz.get_dumbbell_chart_title(district)
+
+    return dumbbell_chart_fig, chart_title
 
 
 # Update Data Visualization 3: Network Chart, Similar School Districts
 # Trigger when district, metric, year, or subgroup selection is changed
 @callback(
     Output(component_id='district-network-chart', component_property='figure'),
+    Output(component_id='district-network-chart-title',
+           component_property='children'),
     Input(component_id='district-select-dropdown', component_property='value'),
     Input(component_id='metric-select-radio', component_property='value'),
     Input(component_id='year-range-select', component_property='value'),
@@ -247,7 +276,10 @@ def update_districts_network_chart(district, metric, year_range, subgroups):
     network_graph_fig = viz.get_districts_network_chart(
         grad_rate_df, district, metric, start_year, stop_year, subgroups)
 
-    return network_graph_fig
+    # Get formatted chart title
+    chart_title = viz.get_network_chart_title(stop_year)
+
+    return network_graph_fig, chart_title
 
 
 # Update selected school district when a user clicks on a node (point)

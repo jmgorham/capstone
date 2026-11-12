@@ -247,8 +247,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},  # remove whitespace padding
         dragmode=False,  # dragging the mouse should do nothing
         template='simple_white',  # minimalist visual style
-        xaxis_title="Graduation Rate Gap<br>"  # add x-axis text label
-        "<i>(Gap = subgroup graduation rate - overall graduation rate)</i>",
+        xaxis_title="Graduation Rate Gap (pp)",  # add x-axis text label
         font={'family': 'Inter, sans-serif', 'size': 14},  # default font
         hoverlabel={  # configure hover text with font and white background
             'font': {'family': 'Inter, sans-serif', 'size': 14},
@@ -284,22 +283,38 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
         (grad_rate_df['subgroup'].isin(subgroups_to_include))
     ]
 
-    # Calculate disparity data
-    start_year_disparity_df = get_disparity_df(
-        grad_rate_filtered_df, metric, start_year)[['district', 'disparity']]
-    start_year_disparity_df = start_year_disparity_df.rename(
-        columns={'disparity': 'disparity_start'})
-    stop_year_dispartiy_df = get_disparity_df(
-        grad_rate_filtered_df, metric, stop_year)[['district', 'disparity']]
-    stop_year_dispartiy_df = stop_year_dispartiy_df.rename(
-        columns={'disparity': 'disparity_stop'})
+    # Edge case: this graph does not work if 0 subgroups are selected
+    if subgroups:
 
-    # Merge to create 1 disparity data set
-    disparity_df = pd.merge(start_year_disparity_df,
-                            stop_year_dispartiy_df, how='inner', on='district')
-    disparity_df['change'] = disparity_df['disparity_stop'] - \
-        disparity_df['disparity_start']
-    disparity_df['improving'] = disparity_df['change'] < 0
+        # Calculate disparity data
+        start_year_disparity_df = get_disparity_df(
+            grad_rate_filtered_df, metric, start_year)[['district',
+                                                        'disparity']]
+        start_year_disparity_df = start_year_disparity_df.rename(
+            columns={'disparity': 'disparity_start'})
+        stop_year_dispartiy_df = get_disparity_df(
+            grad_rate_filtered_df, metric, stop_year)[['district',
+                                                       'disparity']]
+        stop_year_dispartiy_df = stop_year_dispartiy_df.rename(
+            columns={'disparity': 'disparity_stop'})
+
+        # Merge to create 1 disparity data set
+        disparity_df = pd.merge(start_year_disparity_df,
+                                stop_year_dispartiy_df,
+                                how='inner', on='district')
+        disparity_df['change'] = disparity_df['disparity_stop'] - \
+            disparity_df['disparity_start']
+        disparity_df['improving'] = disparity_df['change'] < 0
+
+    else:
+        # If there is no data for selected subgroups, create a 'dummy'
+        # disparity DataFrame with all 0s for disparity values
+        # This is necessary because disparity calculations are not possible
+        # given 0 subgroups
+        disparity_df = grad_rate_filtered_df[['district']].drop_duplicates()
+        disparity_df['disparity_start'] = np.nan
+        disparity_df['disparity_stop'] = np.nan
+        disparity_df['improving'] = 'N/A<br>No Subgroups Selected'
 
     # Extract values for districts and disparities
     node_districts = disparity_df['district'].tolist()
@@ -365,7 +380,7 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
             'colorbar': {
                 'thickness': 15,
                 'title': {
-                    'text': f'Graduation Rate Disparity ({stop_year})',
+                    'text': 'Graduation Rate Disparity (pp)',
                     'side': 'right'
                 },
                 'xanchor': 'left',
@@ -421,6 +436,20 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
         opacity=1
     )
 
+    # Manually add horizontal line at x-axis
+    fig.add_shape(
+        type='line',
+        xref='paper',
+        yref='paper',
+        x0=0,
+        x1=1,
+        y0=0,
+        y1=0,
+        line={'color': 'black', 'width': 1},
+        layer='above',
+        opacity=1
+    )
+
     # Math for zooming in on a selected district
     district_index = node_districts.index(district)
     zoom_x = node_x[district_index]
@@ -434,9 +463,6 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
         yaxis={'range': [zoom_y - range, zoom_y + range], 'autorange': False},
         dragmode='pan',  # dragging with mouse should pan the graph
         template='simple_white',  # minimalist visual style
-        # Add x-axis label text
-        xaxis_title="<i>Disparity = max graduation rate gap "
-        "for any subgroup within a district</i>",
         font={'family': 'Inter, sans-serif', 'size': 14},  # default font
         hoverlabel={  # configure hover text font and white background
             'font': {'family': 'Inter, sans-serif', 'size': 14},
@@ -445,3 +471,40 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
     )
 
     return fig
+
+
+def get_line_chart_title(district):
+    """Format a title for the line chart of graduation rates over time.
+
+    Args:
+        district (string): name of school district displayed in the chart
+
+    Returns:
+        string: formatted chart title
+    """
+    return f'Graduation Rate Outcomes by Student \
+        Demographic Subgroups, {district}'
+
+
+def get_dumbbell_chart_title(district):
+    """Format a title for the dumbbell chart of grad rate gaps over time.
+
+    Args:
+        district (string): name of school district displayed in the chart
+
+    Returns:
+        string: formatted chart title
+    """
+    return f'Graduation Rate Gaps by Student Demographic Subgroups, {district}'
+
+
+def get_network_chart_title(year):
+    """Format a title for the network chart of similar school districts.
+
+    Args:
+        year (int): year of focus for analysis
+
+    Returns:
+        string: formatted chart title
+    """
+    return f'School Districts Grouped by District Characteristics, {year}'

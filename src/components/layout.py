@@ -6,7 +6,6 @@ interactive functionality.
 """
 
 import dash_bootstrap_components as dbc
-import plotly.graph_objects as go
 from dash import dcc, html
 from dash_iconify import DashIconify
 
@@ -52,7 +51,22 @@ def create_layout(grad_rate_df):
         filter_defaults['subgroups']['value']
     )
 
+    # Format default titles for KPIs
+    kpi_statewide_grad_rate_title = kpis.get_statewide_grad_rate_kpi_title(
+        filter_defaults['years']['value'][1]
+    )
+
+    kpi_median_disparity_title = kpis.get_median_grad_rate_disparity_kpi_title(
+        filter_defaults['years']['value'][1]
+    )
+
+    kpi_pct_improving_title = kpis.get_pct_improving_kpi_title(
+        filter_defaults['years']['value'][0],
+        filter_defaults['years']['value'][1]
+    )
+
     # Use defaults to create initial visualizations
+
     viz_line_chart = viz.get_grad_rate_line_chart(
         grad_rate_df,
         filter_defaults['districts']['value'],
@@ -78,6 +92,19 @@ def create_layout(grad_rate_df):
         filter_defaults['years']['value'][0],
         filter_defaults['years']['value'][1],
         filter_defaults['subgroups']['value']
+    )
+
+    # Format default chart titles
+    viz_line_chart_title = viz.get_line_chart_title(
+        filter_defaults['districts']['value']
+    )
+
+    viz_dumbbell_chart_title = viz.get_dumbbell_chart_title(
+        filter_defaults['districts']['value']
+    )
+
+    viz_network_chart_title = viz.get_network_chart_title(
+        filter_defaults['years']['value'][1]
     )
 
     # Build dashboard layout
@@ -318,14 +345,23 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H5("Overall Statewide Graduation Rate",
-                                        className='custom-title'),
+                                html.H5(kpi_statewide_grad_rate_title,
+                                        className='custom-title',
+                                        id='kpi-grad-rate-title'),
                                 # KPI value, handled by callbacks
                                 html.H2(kpi_statewide_grad_rate,
                                         id="kpi-grad-rate",
                                         className='custom-kpi')
                             ])
-                        ])
+                        ], id='kpi-grad-rate-card',
+                            className='custom-kpi-tile'),
+
+                        # Hover text to show KPI definition
+                        dbc.Tooltip(
+                            "Statewide average graduation rate across all '"
+                            "'districts for the subgroup 'All Students'",
+                            target='kpi-grad-rate-card',
+                            placement='bottom')
                     ]),
 
                     # KPI 2: Median disparity
@@ -333,14 +369,24 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H5("Median Graduation Rate Disparity",
-                                        className='custom-title'),
+                                html.H5(kpi_median_disparity_title,
+                                        className='custom-title',
+                                        id='kpi-disparity-title'),
                                 # KPI value, handled by callbacks
                                 html.H2(kpi_median_disparity,
                                         id="kpi-disparity",
                                         className='custom-kpi')
                             ])
-                        ])
+                        ], id='kpi-disparity-card',
+                            className='custom-kpi-tile'),
+
+                        # Hover text to show KPI definition
+                        dbc.Tooltip(
+                            "Median of district-level graduation rate "
+                            "disparities, where disparity = largest "
+                            "magnitude graduation rate gap for any subgroup",
+                            target='kpi-disparity-card',
+                            placement='bottom')
                     ]),
 
                     # KPI 3: Pct improving
@@ -348,18 +394,30 @@ def create_layout(grad_rate_df):
                         dbc.Card([
                             dbc.CardBody([
                                 # KPI title
-                                html.H5("Districts Improving Disparity",
-                                        className='custom-title'),
+                                html.H5(kpi_pct_improving_title,
+                                        className='custom-title',
+                                        id='kpi-pct-improving-title'),
                                 # KPI value, handled by callbacks
                                 html.H2(kpi_pct_improving,
                                         id="kpi-pct-improving",
                                         className='custom-kpi')
 
                             ])
-                        ])
+                        ], id='kpi-pct-improving-card',
+                            className='custom-kpi-tile'),
+
+                        # Hover text to show KPI definition
+                        dbc.Tooltip(
+                            "Percentage of school districts whose graduation "
+                            "rate disparity has decreased over the selected "
+                            "time range",
+                            target='kpi-pct-improving-card',
+                            placement='bottom')
                     ]),
 
                 ], className="mb-4"),  # add vertical padding
+
+                html.Hr(),
 
                 # ROW 2: 2 data visualizations
                 dbc.Row([
@@ -368,10 +426,9 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("Graduation Rate Outcomes by Student "
-                                        "Demographic Subgroups, "
-                                        "Filtered by District",
-                                        className='custom-title'),
+                                html.H5(viz_line_chart_title,
+                                        className='custom-title',
+                                        id='grad-rate-line-chart-title'),
                                 html.P("Are graduation rates "
                                        "improving over time?",
                                        className='custom-subtitle'),
@@ -402,10 +459,9 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("Graduation Rate Gaps by Student "
-                                        "Demographic Subgroups, "
-                                        "Filtered by District",
-                                        className='custom-title'),
+                                html.H5(viz_dumbbell_chart_title,
+                                        className='custom-title',
+                                        id='gaps-dumbbell-chart-title'),
                                 html.P("Are gaps in student outcomes "
                                        "narrowing over time?",
                                        className='custom-subtitle'),
@@ -425,6 +481,11 @@ def create_layout(grad_rate_df):
                                             'downloadJson'
                                         ]
                                     }
+                                ),
+                                html.Div(
+                                    '(Gap = subgroup graduation rate - '
+                                    'overall graduation rate)',
+                                    className='custom-subtitle'
                                 )
                             ])
                             # Force card to fill full available space
@@ -441,9 +502,9 @@ def create_layout(grad_rate_df):
                     dbc.Col([
                         dbc.Card([
                             dbc.CardBody([
-                                html.H5("School Districts Grouped by "
-                                        "District Characteristics",
-                                        className='custom-title'),
+                                html.H5(viz_network_chart_title,
+                                        className='custom-title',
+                                        id='district-network-chart-title'),
                                 html.P("Do similar school districts "
                                        "have similar levels of "
                                        "graduation rate disparity?",
@@ -464,6 +525,11 @@ def create_layout(grad_rate_df):
                                         ],
                                         'scrollZoom': True
                                     }
+                                ),
+                                html.Div(
+                                    '(Disparity = largest magnitude graduation'
+                                    ' rate gap for any subgroup)',
+                                    className='custom-subtitle'
                                 )
                             ])
                         ])
@@ -481,8 +547,13 @@ def create_layout(grad_rate_df):
             className="flex-grow-1 align-items-stretch g-0"
         )
     ],
-        style={'padding': 0},
-        fluid=True  # container stretches to fill entire width of screen]
+        style={
+            'padding': 0,
+            'height': '100vh',  # fill entire vertical height
+            'display': 'flex',
+            'flexDirection': 'column'
+    },
+        fluid=True  # container stretches to fill entire width of screen
     )
 
     return layout
