@@ -17,6 +17,11 @@ SUBGROUPS = ['All Students', 'Female', 'Male', 'Non-binary',
              'English Language Learner', 'In Foster Care',
              'Homeless', 'Migrant', 'Parent in Armed Forces']
 
+NRC_VALUES = ['High N/RC: New York City', 'High N/RC: Large City Districts',
+              'High N/RC: Urban-Suburban Districts',
+              'High N/RC: Rural Districts', 'Average N/RC Districts',
+              'Low N/RC Districts', 'Charter Schools']
+
 # Source for ANIMALS list:
 # https://gist.github.com/CheeseCake87/c1d222c387ff1342cf3b910456f4865a
 ANIMALS = ['Canidae', 'Felidae', 'Cat', 'Cattle', 'Dog', 'Donkey', 'Goat',
@@ -101,7 +106,10 @@ def generate_sample_grad_rate_data():
     # Build a list to store rows of data
     data_rows = []
 
-    for animal_name in ANIMALS:
+    # Get unique values for animals
+    animal_names = sorted(list(set(ANIMALS)))
+
+    for animal_name in animal_names:
 
         # Create a name for a fictional school district
         district = animal_name + ' School District'
@@ -193,3 +201,95 @@ def get_sample_grad_rate_data():
     # Read csv as DataFrame
     sample_grad_rate_df = pd.read_csv(file_path)
     return sample_grad_rate_df
+
+
+def generate_sample_district_data():
+    """Generate synthetic data for school districts.
+
+    This function writes randomly-generated school district data to a csv
+    file for use as sample data. The data includes key characteristics for
+    each school district.
+    """
+    # Define file path for sample data csv
+    file_path = "data/sample_district_data.csv"
+
+    # Check if file already exists
+    if Path(file_path).is_file():
+        # If the file exists, no need to generate data - exit the funciton
+        return
+
+    # Build a list to store rows of data
+    data_rows = []
+
+    # Get unique values for animals
+    animal_names = sorted(list(set(ANIMALS)))
+
+    for animal_name in animal_names:
+
+        # Create a name for a fictional school district
+        district = animal_name + ' School District'
+
+        # Generate random value for needs-resources category (NRC)
+        nrc_cat = random.choice(NRC_VALUES)
+
+        # Generate random value for total enrollment
+        enrollment_base = random.randint(10000, 100000)
+
+        # Generate random value for average class size
+        avg_class_size_base = random.uniform(15, 50)
+
+        # Generate random value for pct students eligible for
+        # free/reduced lunch
+        pct_reduced_lunch_base = random.uniform(5, 25)
+
+        # Generate random value for total expenditures per pupil
+        expenditures_per_pupil_base = random.uniform(100, 1000)
+
+        # Generate random value for pct poc (people of color) students
+        pct_poc_students_base = random.uniform(5, 95)
+
+        # Format rows of data, 1 row for each year
+        for i in range(6):
+            year = 2020 + i
+
+            # Generate values for the year with random noise
+            enrollment = int(enrollment_base * random.uniform(0.95, 1.05))
+            avg_class_size = avg_class_size_base * random.uniform(0.95, 1.05)
+            pct_reduced_lunch = max(0, min(pct_reduced_lunch_base *
+                                           random.uniform(0.95, 1.05), 100))
+            expenditures_per_pupil = \
+                expenditures_per_pupil_base * random.uniform(0.95, 1.05)
+            pct_poc_students = max(0, min(pct_poc_students_base *
+                                          random.uniform(0.95, 1.05), 100))
+
+            # Format row of data
+            row = {'district': district, 'year': year, 'nrc': nrc_cat,
+                   'enrollment': enrollment, 'avg_class_size': avg_class_size,
+                   'pct_reduced_lunch': pct_reduced_lunch,
+                   'expenditures_per_pupil': expenditures_per_pupil,
+                   'pct_poc_students': pct_poc_students}
+            data_rows.append(row)
+
+    # Convert rows to Pandas DataFrame
+    sample_grad_rate_df = pd.DataFrame(data_rows)
+
+    # Write data to csv
+    sample_grad_rate_df.to_csv(file_path, index=False)
+
+
+def get_sample_district_data():
+    """Get sample school district data.
+
+    Returns:
+        DataFrame: sample data for school districts.
+    """
+    # Define file path for sample data csv
+    file_path = "data/sample_district_data.csv"
+
+    # If file does not exist, generate file
+    if not Path(file_path).is_file():
+        generate_sample_district_data()
+
+    # Read csv as DataFrame
+    sample_district_df = pd.read_csv(file_path)
+    return sample_district_df

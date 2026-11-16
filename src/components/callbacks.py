@@ -9,7 +9,7 @@ from dash import Input, Output, callback, no_update, exceptions
 
 import src.components.visualizations as viz
 from src.components import kpis
-from src.utils.sample_data import get_sample_grad_rate_data
+from src.utils.sample_data import get_sample_grad_rate_data, get_sample_district_data
 
 
 # Update KPI 1: Statewide Graduation Rate
@@ -267,6 +267,7 @@ def update_districts_network_chart(district, metric, year_range, subgroups):
 
     # Get data
     grad_rate_df = get_sample_grad_rate_data()
+    district_df = get_sample_district_data()
 
     # Extract start and stop years from selected range
     start_year = year_range[0]
@@ -274,7 +275,8 @@ def update_districts_network_chart(district, metric, year_range, subgroups):
 
     # Re-build visualization
     network_graph_fig = viz.get_districts_network_chart(
-        grad_rate_df, district, metric, start_year, stop_year, subgroups)
+        district_df, grad_rate_df, district, metric, start_year, stop_year,
+        subgroups)
 
     # Get formatted chart title
     chart_title = viz.get_network_chart_title(stop_year)

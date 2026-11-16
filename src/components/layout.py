@@ -14,11 +14,12 @@ import src.components.visualizations as viz
 from src.components.filters_init import initialize_filters
 
 
-def create_layout(grad_rate_df):
+def create_layout(grad_rate_df, district_df):
     """Define the app's frontend UI layout.
 
     Args:
         grad_rate_df (DataFrame): data set for graduation rates
+        district_df (DataFrame): data set for school districts
 
     Returns:
         dbc.Container: UI layout for Dash app, including all
@@ -86,6 +87,7 @@ def create_layout(grad_rate_df):
     )
 
     viz_network_chart = viz.get_districts_network_chart(
+        district_df,
         grad_rate_df,
         filter_defaults['districts']['value'],
         filter_defaults['metrics']['value'],

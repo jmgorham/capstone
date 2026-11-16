@@ -13,6 +13,8 @@ import pandas as pd
 
 from src.utils.data_utils import get_disparity_df, get_gaps_df
 from src.utils.sorting_utils import sort_subgroups
+from src.utils.district_network_utils import get_district_adjacency_graph
+from src.utils.district_adjacency_graph import AdjacencyListGraph
 
 
 def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
@@ -257,8 +259,8 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
     return fig
 
 
-def get_districts_network_chart(grad_rate_df, district, metric, start_year,
-                                stop_year, subgroups):
+def get_districts_network_chart(district_df, grad_rate_df, district, metric,
+                                start_year, stop_year, subgroups):
     """Create network chart visualization for similar school districts.
 
     The figure displays an adjacency graph chart with each school district
@@ -267,6 +269,7 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
     district.
 
     Args:
+        district_df (DataFrame): data set for school districts
         grad_rate_df (DataFrame): data set for graduation rates
         district (string): school district for focus of analysis
         metric (string): metric used to measure graduation rates
@@ -282,6 +285,7 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
     grad_rate_filtered_df = grad_rate_df[
         (grad_rate_df['subgroup'].isin(subgroups_to_include))
     ]
+    district_filtered_df = district_df[district_df['year'] == stop_year]
 
     # Edge case: this graph does not work if 0 subgroups are selected
     if subgroups:
@@ -316,40 +320,93 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
         disparity_df['disparity_stop'] = np.nan
         disparity_df['improving'] = 'N/A<br>No Subgroups Selected'
 
-    # Extract values for districts and disparities
-    node_districts = disparity_df['district'].tolist()
-    node_disparity_start = disparity_df['disparity_start'].tolist()
-    node_disparity_stop = disparity_df['disparity_stop'].tolist()
-    node_disparity_improving = disparity_df['improving'].tolist()
-    node_improving_text = [str(val).upper()
-                           for val in node_disparity_improving]
+    # Get adjacency list graph for districts
+    district_adjacency_graph = get_district_adjacency_graph(
+        district_filtered_df, 5)
 
-    # Generate a random geometric graph
-    G = nx.random_geometric_graph(len(node_districts), 0.125, seed=0)
+    # Extract graph data
+    district_adjacency_graph_data = district_adjacency_graph.get_adj_list()
+    district_metadata = district_adjacency_graph.get_vertex_metadata()
+
+    # Convert to graph object
+    G = nx.from_dict_of_lists(district_adjacency_graph_data)
+
+    # Generate (x, y) coordinates for nodes in graph
+    pos = nx.spring_layout(G, seed=0)
 
     # Format data for visualization
 
-    # Loop through nodes in graph and store position data
+    # Loop through nodes in graph, store position data and district metadata
     node_x = []
     node_y = []
+    district_names = []
+    district_nrc = []
+    district_enrollment = []
+    district_avg_class_size = []
+    district_pct_reduced_lunch = []
+    district_expenditures_per_pupil = []
+    district_pct_poc_students = []
+    district_disparity_start = []
+    district_disparity_stop = []
+    district_disparity_improving = []
+    district_disparity_improving_text = []
     for node in G.nodes:
-        x, y = G.nodes[node]['pos']
+        # Record position data
+        x, y = pos[node]
         node_x.append(x)
         node_y.append(y)
+
+        # Record district name
+        district_names.append(node)
+
+        # Node values are strings, school district names
+        # They can be used to look up school district metadata
+        district_vals = district_metadata[node]
+
+        # Extract values for district characteristics from metadata
+        district_nrc.append(district_vals['nrc'])
+        district_enrollment.append(district_vals['enrollment'])
+        district_avg_class_size.append(district_vals['avg_class_size'])
+        district_pct_reduced_lunch.append(
+            district_vals['pct_reduced_lunch'])
+        district_expenditures_per_pupil.append(
+            district_vals['expenditures_per_pupil'])
+        district_pct_poc_students.append(district_vals['pct_poc_students'])
+
+        # Extract disparity data for the district
+        district_disparity_record = \
+            disparity_df[disparity_df['district'] == node].iloc[0]
+        district_disparity_start.append(
+            district_disparity_record['disparity_start'])
+        district_disparity_stop.append(
+            district_disparity_record['disparity_stop'])
+        improving = district_disparity_record['improving']
+        district_disparity_improving.append(improving)
+        district_disparity_improving_text.append(str(improving).upper())
+
+    # Format data list for including stop_year in custom data for hover text
+    stop_year_list = [stop_year] * len(district_names)
 
     # Loop through edges in graph and store position data
     edge_x = []
     edge_y = []
-    for edge in G.edges:
-        x0, y0 = G.nodes[edge[0]]['pos']
-        x1, y1 = G.nodes[edge[1]]['pos']
+    for node1, node2 in G.edges:
+        x0, y0 = pos[node1]
+        x1, y1 = pos[node2]
         edge_x.extend([x0, x1, None])
         edge_y.extend([y0, y1, None])
 
     # Define format for custom hover text
     hover_template = '<b>%{customdata[0]}</b><br><br>' + \
-        'Enrollment: XXXX<br>Funding: XXXX<br>' + \
-        'Student/teacher ratio: XXXX<br><br>' + \
+        '<b>District details (%{customdata[9]})</b><br>' +\
+        '- Needs-to-resources category: %{customdata[4]}<br>' +\
+        '- Total enrollment: %{customdata[10]:,}<br>' +\
+        '- Avg. class size: %{customdata[5]:.1f}<br>' +\
+        '- Expenditures per pupil: $%{customdata[7]:.2f}<br>' +\
+        '- Pct. students of color: %{customdata[8]:.1f}%<br>' +\
+        '- Pct. students eligible for free/reduced lunch: ' +\
+        '%{customdata[6]:.1f}%<br>' +\
+        '<br>' +\
         'Disparity in ' + str(start_year) + ': %{customdata[1]:.1f}pp<br>' + \
         'Disparity in ' + str(stop_year) + ': %{customdata[2]:.1f}pp<br>' + \
         '<b>Disparity improving: %{customdata[3]}</b><br><br>' + \
@@ -388,14 +445,17 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
             'line_width': 2},
         # Add custom hover text - stacking ensures each node has 1 row
         customdata=np.stack(
-            (node_districts, node_disparity_start,
-             node_disparity_stop, node_improving_text),
+            (district_names, district_disparity_start,
+             district_disparity_stop, district_disparity_improving_text,
+             district_nrc, district_avg_class_size, district_pct_reduced_lunch,
+             district_expenditures_per_pupil, district_pct_poc_students,
+             stop_year_list, district_enrollment),
             axis=1),
         hovertemplate=hover_template
     )
 
     # Add color to nodes - colored by disparity in latest year
-    node_trace.marker.color = node_disparity_stop
+    node_trace.marker.color = district_disparity_stop
 
     # Build visualization
     fig = go.Figure(data=[edge_trace, node_trace],
@@ -451,7 +511,7 @@ def get_districts_network_chart(grad_rate_df, district, metric, start_year,
     )
 
     # Math for zooming in on a selected district
-    district_index = node_districts.index(district)
+    district_index = district_names.index(district)
     zoom_x = node_x[district_index]
     zoom_y = node_y[district_index]
     range = 0.2
