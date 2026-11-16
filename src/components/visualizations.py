@@ -332,7 +332,7 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     G = nx.from_dict_of_lists(district_adjacency_graph_data)
 
     # Generate (x, y) coordinates for nodes in graph
-    pos = nx.spring_layout(G, seed=0)
+    pos = nx.spring_layout(G, seed=0, center=(0, 0))
 
     # Format data for visualization
 
@@ -418,10 +418,13 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     custom_continuous_palette = viridis_scale[: int(
         len(viridis_scale) * 0.875)]
 
+    # Conditional styling of nodes
+    node_sizes = [20 if node == district else 10 for node in district_names]
+
     # Draw edges
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
-        line={'width': 0.5, 'color': '#888'},
+        line={'width': 0.5, 'color': '#808080'},
         hoverinfo='none',
         mode='lines')
 
@@ -433,7 +436,8 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
             'showscale': True,
             'colorscale': custom_continuous_palette,
             'color': [],
-            'size': 10,
+            'opacity': 0.75,
+            'size': node_sizes,
             'colorbar': {
                 'thickness': 15,
                 'title': {
@@ -442,7 +446,10 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
                 },
                 'xanchor': 'left',
             },
-            'line_width': 2},
+            'line': {
+                'width': 1,
+                'color': 'black'
+            }},
         # Add custom hover text - stacking ensures each node has 1 row
         customdata=np.stack(
             (district_names, district_disparity_start,
@@ -514,13 +521,16 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     district_index = district_names.index(district)
     zoom_x = node_x[district_index]
     zoom_y = node_y[district_index]
-    range = 0.2
+    range_x = 0.15
+    range_y = range_x / 3.2
 
     # Configure graph layout
     fig.update_layout(
         # Zoom logic
-        xaxis={'range': [zoom_x - range, zoom_x + range], 'autorange': False},
-        yaxis={'range': [zoom_y - range, zoom_y + range], 'autorange': False},
+        xaxis={'range': [zoom_x - range_x, zoom_x + range_x],
+               'autorange': False},
+        yaxis={'range': [zoom_y - range_y, zoom_y + range_y],
+               'autorange': False},
         dragmode='pan',  # dragging with mouse should pan the graph
         template='simple_white',  # minimalist visual style
         font={'family': 'Inter, sans-serif', 'size': 14},  # default font

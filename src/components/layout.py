@@ -519,8 +519,7 @@ def create_layout(grad_rate_df, district_df):
                                     config={
                                         'displaylogo': False,
                                         'modeBarButtonsToRemove': [
-                                            'zoom', 'select', 'lasso2d',
-                                            'autoScale'
+                                            'zoom', 'select', 'lasso2d'
                                         ],
                                         'modeBarButtonsToAdd': [
                                             'downloadJson'
