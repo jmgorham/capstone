@@ -21,8 +21,13 @@ def get_district_adjacency_graph(district_filtered_df, k):
     non-directed edge is drawn between that district and each of its
     k-nearest neighbors.
 
+    The overall time complexity of this algorithm is O(N * (DlogN + k)) for
+    N school districts, D columns/dimensions of data, and k neighbors. Given
+    D and k as constants, the asymptotic time complexity simplifies to
+    O(NlogN).
+
     Args:
-        district_filtered_df (DataFrame): school district data, filtered to 
+        district_filtered_df (DataFrame): school district data, filtered to
             include exactly 1 year of data and 1 row per school district
         k (int): minimum number of edges to draw for each district
 
@@ -45,10 +50,14 @@ def get_district_adjacency_graph(district_filtered_df, k):
     adjacency_list_graph = AdjacencyListGraph()
 
     # Fit KNN model
+    # This function is O(D * NlogN) for N school districts and D dimensions
+    # (columns) of data
     distances, indices = fit_district_k_nearest_neighbors(
         district_filtered_df, k)
 
     # Iterate through districts
+    # This outer loop has O(N) time complexity; the inner loop has time
+    # complexity O(k); the total complexity for the loop is O(N * k)
     for i in range(len(indices)):
         # indices is a list of lists; each list has k+1 elements with a
         # district index as the first value and indexes of adjacent districts
@@ -67,6 +76,7 @@ def get_district_adjacency_graph(district_filtered_df, k):
         district_name = district_record['district']
 
         # Add edges to graph
+        # This inner loop executes k times for k neighbors per district
         for j in range(len(adjacent_district_indexes)):
             # Index values
             adj_district_index = adjacent_district_indexes[j]
@@ -92,8 +102,11 @@ def fit_district_k_nearest_neighbors(district_filtered_df, k):
     district characteristics, and determines the k districts nearest to each
     district.
 
+    This algorithm has a time complexity of O(D * NlogN) for a data set with
+    N rows and D columns.
+
     Args:
-        district_filtered_df (DataFrame): school district data, filtered to 
+        district_filtered_df (DataFrame): school district data, filtered to
             include exactly 1 year of data and 1 row per school district
         k (int): number of nearest neighbors to calculate for each district
 
@@ -106,6 +119,7 @@ def fit_district_k_nearest_neighbors(district_filtered_df, k):
             Example: [[0, 2, 5], [1, 2, 7], [2, 6, 3]]
     """
     # Format data for ML
+    # All vectorized DataFrame operations are O(1)
     features_df = district_filtered_df.copy()
 
     # Remove columns that identify rows
@@ -116,6 +130,7 @@ def fit_district_k_nearest_neighbors(district_filtered_df, k):
         features_df['nrc'].str.contains('High'), 1, 0)
 
     # Define transformations for columns
+    # Transformations are O(N * D) for a data set with N rows and D columns
     preprocessor = ColumnTransformer(
         transformers=[
             # Min-max normalization for numerical columns
@@ -135,10 +150,14 @@ def fit_district_k_nearest_neighbors(district_filtered_df, k):
     features_transformed_df.head()
 
     # Fit unsupervized K-Nearest Neighbors model
+    # Training the model has time complexity O(D * NlogN) for a data set with
+    # N rows and D columns
     knn = NearestNeighbors(n_neighbors=k+1,
                            metric='euclidean').fit(features_transformed_df)
 
     # Extract data on nodes and neighbors
+    # Querying the model has time complexity O(N * D) in the worst case for a
+    # data set wtih N rows and D columns
     distances, indices = knn.kneighbors(features_transformed_df)
 
     return distances, indices

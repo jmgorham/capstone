@@ -11,6 +11,8 @@ from src.utils.sorting_utils import sort_metrics, sort_subgroups
 def initialize_filters(grad_rate_df):
     """Determine value options and defaults for UI filter components.
 
+    Time complexity: O(N) for N rows of data
+
     Args:
         grad_rate_df (DataFrame): graduation rate data. Must include the
             following columns:
@@ -26,18 +28,21 @@ def initialize_filters(grad_rate_df):
 
     """
     # Filter out aggregates that should not be selectable
+    # Filtering is O(N * M) for N rows and M columns
     grad_rate_df_filtered = grad_rate_df[(grad_rate_df['district']
                                           != 'Statewide School District') &
                                          (grad_rate_df['subgroup']
                                           != 'All Students')]
 
     # Extract values from data for districts, metrics, years, and subgroups
+    # Each line is O(1) for extracting values from the DataFrame and
+    # O(NlogN) for sorting each list, where N is the length of the list
     districts = sorted(grad_rate_df_filtered['district'].dropna().unique())
     metrics = sorted(grad_rate_df_filtered['metric'].dropna().unique())
     years = sorted(grad_rate_df_filtered['year'].dropna().unique())
     subgroups = sorted(grad_rate_df_filtered['subgroup'].dropna().unique())
 
-    # Apply custom sorting orders to metrics and subgroups
+    # Apply custom sorting orders to metrics and subgroups; O(NlogN)
     metrics_sorted = sort_metrics(metrics)
     subgroups_sorted = sort_subgroups(subgroups)
 
@@ -46,6 +51,7 @@ def initialize_filters(grad_rate_df):
     default_metric = 'Four-Year Graduation Rate'
 
     # Use values to determine options and defaults for UI filter components
+    # Full block is O(1)
     filter_configs = {
 
         # Defaults for school districts dropdown

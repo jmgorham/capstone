@@ -18,6 +18,8 @@ def get_statewide_grad_rate(grad_rate_df, metric, year):
     a state-level aggregate and uses the subgroup 'All Students' as a baseline
     value.
 
+    Time complexity: O(N) for N rows
+
     Args:
         grad_rate_df (DataFrame): data set for graudation rates
         metric (string): metric used to measure graduation rates
@@ -26,7 +28,7 @@ def get_statewide_grad_rate(grad_rate_df, metric, year):
     Returns:
         string: overall statewide graduation rate, formatted for visualization
     """
-    # Filter data
+    # Filter data; filtering is O(N * M) for N rows and M columns
     grad_rate_df_filtered = grad_rate_df[
         # Extract statewide aggregate values
         (grad_rate_df['district'] == 'Statewide School District') &
@@ -35,7 +37,7 @@ def get_statewide_grad_rate(grad_rate_df, metric, year):
         (grad_rate_df['year'] == year) &
         (grad_rate_df['metric'] == metric)]
 
-    # Extract overall graduation rate from filtered data
+    # Extract overall graduation rate from filtered data; O(1)
     overall_grad_rate = grad_rate_df_filtered['value'].item()
 
     # Format for visualization
@@ -50,6 +52,8 @@ def get_median_grad_rate_disparity(grad_rate_df, metric, year, subgroups):
     This metric is not impacted by selections of district. It is a state-level 
     aggregate.
 
+    Time complexity: O(N) for N rows of data
+
     Args:
         grad_rate_df (DataFrame): data set for graudation rates
         metric (string): metric used to measure graduation rates
@@ -60,15 +64,17 @@ def get_median_grad_rate_disparity(grad_rate_df, metric, year, subgroups):
         string: overall statewide graduation rate, formatted for visualization
     """
     # Filter by subgroups, including 'All Students' as a baseline
+    # Filtering is O(N * M) for N rows and M columns
     subgroups_to_include = subgroups + ['All Students']
     grad_rate_df_filtered = grad_rate_df[grad_rate_df['subgroup'].isin(
         subgroups_to_include)]
 
     # Calculate graduation rate disparities for all districts
+    # get_disparity_df is O(N * M) for N rows and M columns
     district_disparity_df = data_utils.get_disparity_df(
         grad_rate_df_filtered, metric, year)
 
-    # Determine district-level median disparity
+    # Determine district-level median disparity; O(1)
     median_grad_rate_disparity = district_disparity_df['disparity'].median()
 
     # Format for visualization
@@ -85,6 +91,8 @@ def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
     This metric is not impacted by selections of district. It is a state-level
     aggregate.
 
+    Time complexity: O(N) for N rows of data
+
     Args:
         grad_rate_df (DataFrame): data set for graudation rates
         metric (string): metric used to measure graduation rates
@@ -97,34 +105,39 @@ def get_pct_districts_improving_disparity(grad_rate_df, metric, start_year,
             formatted for visualization
     """
     # Filter by subgroups, including 'All Students' as a baseline
+    # Filtering is O(N * M) for N rows and M columns
     subgroups_to_include = subgroups + ['All Students']
     grad_rate_df_filtered = grad_rate_df[grad_rate_df['subgroup'].isin(
         subgroups_to_include)]
 
     # Calculate graduation rate disparities for start_year
+    # get_disparity_df is O(N * M) for N rows and M columns
     disparity_start_year_df = data_utils.get_disparity_df(
         grad_rate_df_filtered, metric, start_year)[
         ['district', 'disparity']].rename(
             columns={'disparity': 'disparity_start'})
 
     # Calculate graduation rate disparities for stop_year
+    # get_disparity_df is O(N * M) for N rows and M columns
     disparity_stop_year_df = data_utils.get_disparity_df(
         grad_rate_df_filtered, metric, stop_year)[
         ['district', 'disparity']].rename(
             columns={'disparity': 'disparity_stop'})
 
     # Join dataframes to determine changes in disparities for all districts
+    # Inner merge with one-to-one key relationship is O(N) for N rows
     disparity_change_df = pd.merge(
         disparity_start_year_df, disparity_stop_year_df,
         on='district', how='inner')
 
-    # Add column for change in disparity
+    # Add column for change in disparity; O(1) vectorized operation
     disparity_change_df['change'] = disparity_change_df['disparity_stop'] - \
         disparity_change_df['disparity_start']
 
     # Calculate percent improving
     # Negative change indicates a disparity that is lower at the end of the
     # time interval, and is therefore improving
+    # O(1) vectorizsed calculation
     pct_improving = (disparity_change_df['change'] < 0).mean() * 100
 
     # Format for visualization

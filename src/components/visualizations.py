@@ -24,6 +24,8 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
     The figure displays a time-series line chart with a different series for
     each demogrpahic subgroup, indicating the graduation rate in each year.
 
+    Time complexity: O(N) for N rows of data
+
     Args:
         grad_rate_df (DataFrame): data set for graduation rates
         district (string): school district for focus of analysis
@@ -38,10 +40,11 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
     # Build list of subgroups to include, with 'All Students' as a baseline
     subgroups_to_include = subgroups + ['All Students']
 
-    # Sort subgroup values for visualization
+    # Sort subgroup values for visualization; time complexity of O(NlogN) for
+    # N subgroups
     subgroups_sorted = sort_subgroups(subgroups_to_include)
 
-    # Filter data
+    # Filter data; time complexity of O(N * M) for N rows and M columns
     grad_rate_filtered_df = grad_rate_df[(
         grad_rate_df['district'] == district) &
         (grad_rate_df['metric'] == metric) &
@@ -54,6 +57,8 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
         px.colors.qualitative.Antique[:4] + px.colors.qualitative.Antique[5:]
 
     # Build visualization
+    # Time complexity is O(N) in terms of number of points plotted, where
+    # N = (stop_year - start_year) * (# subgroups)
     fig = px.line(grad_rate_filtered_df, x='year', y='value', color='subgroup',
                   # Format axis labels on the chart
                   labels={'year': '',
@@ -65,7 +70,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
                   # Define color scheme
                   color_discrete_sequence=custom_qualitative_palette)
 
-    # Configure x axis
+    # Configure x axis; O(1)
     fig.update_xaxes(
         # Force x-axis ticks for every year
         tickmode='linear',
@@ -73,7 +78,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
         dtick=1
     )
 
-    # Manually draw grid lines
+    # Manually draw grid lines; O(N) for N years
     for year in range(start_year, stop_year):
         fig.add_vline(
             x=year,
@@ -83,7 +88,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
             opacity=1
         )
 
-    # Set custom hover text
+    # Set custom hover text; O(1)
     fig.update_traces(
         hovertemplate='<b>Subgroup: %{customdata[0]}</b><br><br>' +
         'Year: %{x}<br>' +
@@ -91,7 +96,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
         '<extra></extra>'
     )
 
-    # Configure layout
+    # Configure layout; O(1)
     fig.update_layout(
         height=500,  # constrain graph height
         margin={'l': 0, 'r': 0, 't': 0, 'b': 0},  # remove whitespace padding
@@ -115,6 +120,8 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
     For each subgroup, one point indicates the disparity in the start year,
     and another point indicates the disparty in the stop year.
 
+    Time complexity: O(N) for N rows of data
+
     Args:
         grad_rate_df (DataFrame): data set for graduation rates
         district (string): school district for focus of analysis
@@ -131,19 +138,21 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
 
     # Sort subgroup values for visualization
     # Reverse the list since the chart is constructed from the bottom up
+    # Sorting is O(NlogN) for N subgroups
     subgroups_sorted = sort_subgroups(subgroups)[::-1]
 
-    # Filter data
+    # Filter data; filtering is O(N * M) for N rows and M columns
     grad_rate_filtered_df = grad_rate_df[(
         grad_rate_df['district'] == district) &
         (grad_rate_df['metric'] == metric) &
         (grad_rate_df['subgroup'].isin(subgroups_to_include))]
 
     # Calculate gaps from baseline 'All Students'
+    # Function get_gaps_df is O(N * M) for N rows and M columns
     gaps_start_year_df = get_gaps_df(grad_rate_filtered_df, metric, start_year)
     gaps_stop_year_df = get_gaps_df(grad_rate_filtered_df, metric, stop_year)
 
-    # Define format for hover text for visualization
+    # Define format for hover text for visualization; O(1)
     gap_definition_text = \
         '<i>Gap = subgroup graduation rate - overall graduation rate</i>'
     hover_template = '<b>Subgroup: %{customdata[0]}</b><br><br>' + \
@@ -157,10 +166,12 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
     fig = go.Figure()
 
     # Loop through subgroups and add data to chart
+    # Loop is O(N) for N subgoroups
     for i in range(len(subgroups_sorted)):
         subgroup = subgroups_sorted[i]
 
         # Extract gap values in start year and stop year
+        # Requires filtering with time complexity O(N * M)
         gap_start_year = gaps_start_year_df[gaps_start_year_df['subgroup']
                                             == subgroup]['gap'].values[0]
         gap_stop_year = gaps_stop_year_df[gaps_stop_year_df['subgroup']
@@ -209,14 +220,14 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             hovertemplate=hover_template
         ))
 
-    # Configure x axis
+    # Configure x axis; O(1)
     fig.update_xaxes(
         # zeroline=True,  # add vertical grid line at origin
         # zerolinecolor='LightGray',
         tickformat='+'  # format x-axis tick values as signed integers
     )
 
-    # Manually draw vertical line at x = 0
+    # Manually draw vertical line at x = 0; O(1)
     fig.add_vline(
         x=0,
         line_width=1,
@@ -225,7 +236,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
         layer='below'
     )
 
-    # Manually draw horizontal grid lines
+    # Manually draw horizontal grid lines; O(1)
     for subgroup in subgroups_sorted:
         fig.add_hline(
             y=subgroup,
@@ -235,7 +246,7 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
             layer='below'
         )
 
-    # Configure graph layout
+    # Configure graph layout; O(1)
     fig.update_layout(
         height=500,  # constrain height
         legend_itemclick=False,
@@ -268,6 +279,8 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     district. Nodes are colored by the graudation rate disparity in each
     district.
 
+    Time complexity: O(N^2) for N rows of data
+
     Args:
         district_df (DataFrame): data set for school districts
         grad_rate_df (DataFrame): data set for graduation rates
@@ -280,7 +293,7 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     Returns:
         Figure: Plotly figure displaying district network chart
     """
-    # Filter data
+    # Filter data; filtering is O(N * M) for N rows and M columns
     subgroups_to_include = subgroups + ['All Students']
     grad_rate_filtered_df = grad_rate_df[
         (grad_rate_df['subgroup'].isin(subgroups_to_include))
@@ -290,7 +303,7 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     # Edge case: this graph does not work if 0 subgroups are selected
     if subgroups:
 
-        # Calculate disparity data
+        # Calculate disparity data; vectorized calculations are O(1)
         start_year_disparity_df = get_disparity_df(
             grad_rate_filtered_df, metric, start_year)[['district',
                                                         'disparity']]
@@ -303,6 +316,7 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
             columns={'disparity': 'disparity_stop'})
 
         # Merge to create 1 disparity data set
+        # Inner merge with one-to-one key relationship is O(N) for N rows
         disparity_df = pd.merge(start_year_disparity_df,
                                 stop_year_dispartiy_df,
                                 how='inner', on='district')
@@ -315,26 +329,31 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
         # disparity DataFrame with all 0s for disparity values
         # This is necessary because disparity calculations are not possible
         # given 0 subgroups
+        # All vectorized operations here are O(1)
         disparity_df = grad_rate_filtered_df[['district']].drop_duplicates()
         disparity_df['disparity_start'] = np.nan
         disparity_df['disparity_stop'] = np.nan
         disparity_df['improving'] = 'N/A<br>No Subgroups Selected'
 
-    # Get adjacency list graph for districts
+    # Get adjacency list graph for districts; O(NlogN) for N rows of data
     district_adjacency_graph = get_district_adjacency_graph(
         district_filtered_df, 5)
 
-    # Extract graph data
+    # Extract graph data; O(1)
     district_adjacency_graph_data = district_adjacency_graph.get_adj_list()
     district_metadata = district_adjacency_graph.get_vertex_metadata()
 
     # Convert to graph object
+    # Complexity is O(V + E) for V vertices and E edges
+    # In context, this is O(N) for N rows of data, since rows correspond
+    # linearly to school districts which correspond linearly to V and E
     G = nx.Graph([(u, v, {'weight': 1 / w})  # inverting weights ensures
                  # for accurate positions, since spring_layout treats larger
                   # values as stronger attractive forces
                   for (u, v,), w in district_adjacency_graph_data.items()])
 
     # Generate (x, y) coordinates for nodes in graph
+    # Time complexity is O(N^2)
     pos = nx.spring_layout(G, weight='weight', seed=0, center=(0, 0))
 
     # Format data for visualization
@@ -353,6 +372,8 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     district_disparity_stop = []
     district_disparity_improving = []
     district_disparity_improving_text = []
+
+    # Time complexity of loop is O(V) for V vertices, or O(N) for N rows
     for node in G.nodes:
         # Record position data
         x, y = pos[node]
@@ -377,6 +398,7 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
         district_pct_poc_students.append(district_vals['pct_poc_students'])
 
         # Extract disparity data for the district
+        # Requires filtering, which is O(N * M)
         district_disparity_record = \
             disparity_df[disparity_df['district'] == node].iloc[0]
         district_disparity_start.append(
@@ -393,13 +415,15 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     # Loop through edges in graph and store position data
     edge_x = []
     edge_y = []
+
+    # Loop is O(E) for E edges, or O(N) for N rows
     for node1, node2 in G.edges:
         x0, y0 = pos[node1]
         x1, y1 = pos[node2]
         edge_x.extend([x0, x1, None])
         edge_y.extend([y0, y1, None])
 
-    # Define format for custom hover text
+    # Define format for custom hover text; O(1)
     hover_template = '<b>%{customdata[0]}</b><br><br>' + \
         '<b>District details (%{customdata[9]})</b><br>' +\
         '- Needs-to-resources category: %{customdata[4]}<br>' +\
@@ -417,22 +441,22 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
         'for any subgroup</i>' + \
         '<extra></extra>'
 
-    # Define custom color scale
+    # Define custom color scale; O(1)
     viridis_scale = pc.sequential.Viridis
     custom_continuous_palette = viridis_scale[: int(
         len(viridis_scale) * 0.875)]
 
-    # Conditional styling of nodes
+    # Conditional styling of nodes; O(N)
     node_sizes = [20 if node == district else 10 for node in district_names]
 
-    # Draw edges
+    # Draw edges; O(E) for E edges or O(N) for N rows
     edge_trace = go.Scatter(
         x=edge_x, y=edge_y,
         line={'width': 0.5, 'color': '#808080'},
         hoverinfo='none',
         mode='lines')
 
-    # Draw nodes
+    # Draw nodes; O(V) for V vertices or O(N) for N rows
     node_trace = go.Scatter(
         x=node_x, y=node_y,
         mode='markers',
@@ -468,7 +492,7 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     # Add color to nodes - colored by disparity in latest year
     node_trace.marker.color = district_disparity_stop
 
-    # Build visualization
+    # Build visualization; O(1)
     fig = go.Figure(data=[edge_trace, node_trace],
                     layout=go.Layout(
                     showlegend=False,

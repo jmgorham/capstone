@@ -9,6 +9,8 @@ class AdjacencyListGraph:
     between vertices represent that the two vertices are mutually adjacent
     within the graph.
 
+    Space complexity: O(N)
+
     Attributes:
         adj_list (dict<tuple(string, string): float>): dictinoary mapping
             pairs of vertices, represented by their vertex ids, to the weight
@@ -30,18 +32,22 @@ class AdjacencyListGraph:
     def add_vertex(self, vertex_id, vertex_metadata):
         """Add a vertex to an AdjacencyListGraph.
 
+        Time complexity: O(1)
+
         Args:
             vertex_id (string): text to uniquely identify the vertex to add
             vertex_metadata (dict): json-like metadata for the vertex
         """
         # Check if vertex already exists in the list
-        if vertex_id not in self.vertices_metadata:
-            # Register vertex metadata
+        if vertex_id not in self.vertices_metadata:  # dict lookup is O(1)
+            # Register vertex metadata; dict insertion is O(1)
             self.vertices_metadata[vertex_id] = vertex_metadata
 
     def add_edge(self, vertex_id_0, vertex_metadata_0,
                  vertex_id_1, vertex_metadata_1, edge_weight):
         """Add an edge between two vertices in an AdjacencyListGraph.
+
+        Time complexity: O(1)
 
         Args:
             vertex_id_0 (string): text to uniquely identify the first vertex
@@ -50,15 +56,15 @@ class AdjacencyListGraph:
             vertex_metadata_1 (dict): json-like metadata for the second vertex
             edge_weight (float): weight of the edge
         """
-        # Ensure both vertices exist in the graph
+        # Ensure both vertices exist in the graph; add_vertix is O(1)
         self.add_vertex(vertex_id_0, vertex_metadata_0)
         self.add_vertex(vertex_id_1, vertex_metadata_1)
 
-        # Add edge from vertex 0 to vertex 1
+        # Add edge from vertex 0 to vertex 1; lookup and insertion are O(1)
         if (vertex_id_0, vertex_id_1) not in self.adj_list:
             self.adj_list[(vertex_id_0, vertex_id_1)] = edge_weight
 
-        # Add edge from vertex 1 to vertex 0
+        # Add edge from vertex 1 to vertex 0; lookup and insertion are O(1)
         if (vertex_id_1, vertex_id_0) not in self.adj_list:
             self.adj_list[(vertex_id_1, vertex_id_0)] = edge_weight
 

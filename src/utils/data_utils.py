@@ -14,6 +14,8 @@ def get_disparity_df(grad_rate_df, metric, year):
     its overall graduation rate and the lowest graduation rate across all
     demographic subgroups.
 
+    Time complexity: O(N * M)
+
     Args:
         grad_rate_df (DataFrame): data set for graduation rates
         metric (string): metric used to determine graduation rates
@@ -25,6 +27,8 @@ def get_disparity_df(grad_rate_df, metric, year):
             value for each school district
     """
     # Filter data
+    # Filtering a DataFrame has time complexity O(N * M) with N rows and M
+    # columns; in this context, M is constant
     grad_rate_filtered_df = grad_rate_df[(grad_rate_df['metric'] == metric) &
                                          (grad_rate_df['year'] == year) &
                                          (grad_rate_df['district']
@@ -45,10 +49,12 @@ def get_disparity_df(grad_rate_df, metric, year):
         columns={'value': 'min_subgroup_grad_rate'})
 
     # Perform an inner join on the two dataframes
+    # Given that both DataFrames have the same number of rows and this is
+    # an inner join with a one-to-one key relationship, this join is O(N)
     district_disparity_df = pd.merge(
         baseline_df, min_subgroups_df, on='district', how='inner')
 
-    # Add column for disparity
+    # Add column for disparity; vectorized calculation is O(1)
     district_disparity_df['disparity'] = \
         district_disparity_df['baseline_all_students'] - \
         district_disparity_df['min_subgroup_grad_rate']
@@ -65,6 +71,8 @@ def get_gaps_df(grad_rate_df, metric, year):
     This function assumes the input data set grad_rate_df has been filtered
     to include data for only one school district.
 
+    Time complexity: O(N * M)
+
     Args:
         grad_rate_df (DataFrame): data set for graduation rates
         metric (string): metric used to measure graduation rates
@@ -76,11 +84,14 @@ def get_gaps_df(grad_rate_df, metric, year):
             subgroup
     """
     # Filter data
+    # Filtering a DataFrame has time complexity O(N * M) with N rows and M
+    # columns; in this context, M is constant
     grad_rate_filtered_df = grad_rate_df[
         (grad_rate_df['metric'] == metric) &
         (grad_rate_df['year'] == year)]
 
     # Extract baseline for comparison, grad rate for 'All Students'
+    # Requires filtering which is O(N * M)
     baseline = grad_rate_filtered_df[
         grad_rate_filtered_df['subgroup'] == 'All Students']['value'].values[0]
 
@@ -88,7 +99,7 @@ def get_gaps_df(grad_rate_df, metric, year):
     subgroups_gap_df = grad_rate_filtered_df[
         grad_rate_filtered_df['subgroup'] != 'All Students']
 
-    # Add column for gap
+    # Add column for gap; vectorized calculation is O(1)
     subgroups_gap_df['gap'] = subgroups_gap_df['value'] - baseline
 
     return subgroups_gap_df

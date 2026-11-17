@@ -8,6 +8,8 @@ consistently."""
 def sort_metrics(metrics):
     """Apply custom sorting to a list of metrics.
 
+    Time complexity: O(NlogN)
+
     Args:
         metrics (list<string>): metric values to sort
 
@@ -24,6 +26,7 @@ def sort_metrics(metrics):
         if x in default_metrics_sorting else len(default_metrics_sorting)
 
     # Sort input list according to sort_key
+    # Time complexity: O(NlogN)
     metrics_sorted = sorted(metrics, key=sort_key)
 
     return metrics_sorted
@@ -31,6 +34,8 @@ def sort_metrics(metrics):
 
 def sort_subgroups(subgroups):
     """Apply custom sorting to a list of subgroups.
+
+    Time complexity: O(NlogN)
 
     Args:
         subgroups (list<string>): subgroup values to sort
@@ -54,6 +59,7 @@ def sort_subgroups(subgroups):
         if x in default_subgroups_sorting else len(default_subgroups_sorting)
 
     # Sort input list according to sort_key
+    # Time complexity: O(NlogN)
     subgroups_sorted = sorted(subgroups, key=sort_key)
 
     return subgroups_sorted
