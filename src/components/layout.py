@@ -135,7 +135,9 @@ def create_layout(grad_rate_df, district_df):
                                         " Equity in Education"
                                     ],
                                     className='d-flex align-items-center '
-                                    'gap-2 custom-title'
+                                    'gap-2 custom-title text-wrap text-break',
+                                    style={"overflowWrap": "break-word",
+                                           "wordWrap": "break-word"}
                                 ),
                                 html.Div('An exploratoy analytics dashboard',
                                          className='custom-subtitle')
@@ -184,7 +186,9 @@ def create_layout(grad_rate_df, district_df):
                                     ['options'],
                                     # Value determines default selection
                                     value=filter_defaults['metrics']['value'],
-                                    inline=False  # stack vertically
+                                    inline=False,  # stack vertically
+                                    labelStyle={'overflowWrap': 'break-word',
+                                                'wordBreak': 'break-word'}
                                 )
                             ]),
 
@@ -236,7 +240,10 @@ def create_layout(grad_rate_df, district_df):
                                     options=filter_defaults['subgroups']
                                     ['options'],
                                     # Value determines default selection
-                                    value=filter_defaults['subgroups']['value']
+                                    value=filter_defaults['subgroups']
+                                    ['value'],
+                                    labelStyle={'overflowWrap': 'break-word',
+                                                'wordBreak': 'break-word'}
                                 )
                             ])
                         ], gap=3)  # gap provides vertical padding
@@ -254,7 +261,10 @@ def create_layout(grad_rate_df, district_df):
                                     html.Span('LinkedIn')
                                 ], direction='horizontal',
                                     gap=2,
-                                    className='align-items-center'
+                                    className='align-items-center text-wrap '
+                                    'text-break',
+                                    style={'overflowWrap': 'break-word',
+                                           'wordWrap': 'break-word'}
                                 )
                             ],
                                 href='https://www.linkedin.com/in/jmgorham/',
@@ -270,7 +280,10 @@ def create_layout(grad_rate_df, district_df):
                                     html.Span('GitHub')
                                 ], direction='horizontal',
                                     gap=2,
-                                    className='align-items-center'
+                                    className='align-items-center text-wrap '
+                                    'text-break',
+                                    style={'overflowWrap': 'break-word',
+                                           'wordWrap': 'break-word'}
                                 )
                             ],
                                 href='https://github.com/jmgorham',
@@ -288,7 +301,10 @@ def create_layout(grad_rate_df, district_df):
                                     html.Span('Analytics Portfolio')
                                 ], direction='horizontal',
                                     gap=2,
-                                    className='align-items-center'
+                                    className='align-items-center text-wrap '
+                                    'text-break',
+                                    style={'overflowWrap': 'break-word',
+                                           'wordWrap': 'break-word'}
                                 )
                             ],
                                 href='https://jmgorham.github.io/portfolio/',
@@ -353,10 +369,10 @@ def create_layout(grad_rate_df, district_df):
                                 # KPI value, handled by callbacks
                                 html.H2(kpi_statewide_grad_rate,
                                         id="kpi-grad-rate",
-                                        className='custom-kpi')
-                            ])
+                                        className='custom-kpi mt-auto')
+                            ], className='d-flex flex-column')
                         ], id='kpi-grad-rate-card',
-                            className='custom-kpi-tile'),
+                            className='custom-kpi-tile h-100'),
 
                         # Hover text to show KPI definition
                         dbc.Tooltip(
@@ -377,10 +393,10 @@ def create_layout(grad_rate_df, district_df):
                                 # KPI value, handled by callbacks
                                 html.H2(kpi_median_disparity,
                                         id="kpi-disparity",
-                                        className='custom-kpi')
-                            ])
+                                        className='custom-kpi mt-auto')
+                            ], className='d-flex flex-column')
                         ], id='kpi-disparity-card',
-                            className='custom-kpi-tile'),
+                            className='custom-kpi-tile h-100'),
 
                         # Hover text to show KPI definition
                         dbc.Tooltip(
@@ -402,11 +418,11 @@ def create_layout(grad_rate_df, district_df):
                                 # KPI value, handled by callbacks
                                 html.H2(kpi_pct_improving,
                                         id="kpi-pct-improving",
-                                        className='custom-kpi')
+                                        className='custom-kpi mt-auto')
 
-                            ])
+                            ], className='d-flex flex-column')
                         ], id='kpi-pct-improving-card',
-                            className='custom-kpi-tile'),
+                            className='custom-kpi-tile h-100'),
 
                         # Hover text to show KPI definition
                         dbc.Tooltip(
