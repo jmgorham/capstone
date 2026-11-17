@@ -549,8 +549,8 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     district_index = district_names.index(district)
     zoom_x = node_x[district_index]
     zoom_y = node_y[district_index]
-    range_x = 0.15
-    range_y = range_x / 3.2
+    range_x = 0.05
+    range_y = range_x
 
     # Configure graph layout
     fig.update_layout(
@@ -565,7 +565,10 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
         hoverlabel={  # configure hover text font and white background
             'font': {'family': 'Inter, sans-serif', 'size': 14},
             'bgcolor': 'white'
-        }
+        },
+        # Force 1:1 square aspect ratio
+        yaxis_scaleanchor='x',
+        yaxis_scaleratio=1
     )
 
     return fig
