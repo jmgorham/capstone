@@ -85,7 +85,7 @@ def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,
 
     # Set custom hover text
     fig.update_traces(
-        hovertemplate='<b>%{customdata[0]}</b><br><br>' +
+        hovertemplate='<b>Subgroup: %{customdata[0]}</b><br><br>' +
         'Year: %{x}<br>' +
         'Grad rate: %{y:.1f}%' +
         '<extra></extra>'
@@ -145,8 +145,8 @@ def get_disparity_dumbbell_chart(grad_rate_df, district, metric, start_year,
 
     # Define format for hover text for visualization
     gap_definition_text = \
-        'Gap = subgroup grad rate - overall grad rate'
-    hover_template = '<b>%{customdata[0]}</b><br><br>' + \
+        '<i>Gap = subgroup graduation rate - overall graduation rate</i>'
+    hover_template = '<b>Subgroup: %{customdata[0]}</b><br><br>' + \
         'Gap in %{customdata[1]}: %{customdata[2]:.1f}pp<br>' + \
         'Gap in %{customdata[3]}: %{customdata[4]:.1f}pp<br>' + \
         '<b>Gap improving: %{customdata[5]}</b><br><br>' + \
@@ -413,7 +413,8 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
         'Disparity in ' + str(start_year) + ': %{customdata[1]:.1f}pp<br>' + \
         'Disparity in ' + str(stop_year) + ': %{customdata[2]:.1f}pp<br>' + \
         '<b>Disparity improving: %{customdata[3]}</b><br><br>' + \
-        'Disparity = max grad rate gap for any subgroup' + \
+        '<i>Disparity = largest magnitude graduation rate gap ' +\
+        'for any subgroup</i>' + \
         '<extra></extra>'
 
     # Define custom color scale

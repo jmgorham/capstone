@@ -360,8 +360,8 @@ def create_layout(grad_rate_df, district_df):
 
                         # Hover text to show KPI definition
                         dbc.Tooltip(
-                            "Statewide average graduation rate across all '"
-                            "'districts for the subgroup 'All Students'",
+                            "Statewide average graduation rate across all "
+                            "districts for the subgroup 'All Students'",
                             target='kpi-grad-rate-card',
                             placement='bottom')
                     ]),
