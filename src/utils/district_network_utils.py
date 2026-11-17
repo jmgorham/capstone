@@ -45,7 +45,7 @@ def get_district_adjacency_graph(district_filtered_df, k):
     adjacency_list_graph = AdjacencyListGraph()
 
     # Fit KNN model
-    _, indices = fit_district_k_nearest_neighbors(
+    distances, indices = fit_district_k_nearest_neighbors(
         district_filtered_df, k)
 
     # Iterate through districts
@@ -57,15 +57,20 @@ def get_district_adjacency_graph(district_filtered_df, k):
 
         # Extract values
         indices_row = indices[i]
+        weights_row = distances[i]
         district_index = indices_row[0]
         adjacent_district_indexes = indices_row[1:]
+        edge_weights = weights_row[1:]
 
         # Extract district data associated with district_index
         district_record = district_filtered_df.iloc[district_index].to_dict()
         district_name = district_record['district']
 
         # Add edges to graph
-        for adj_district_index in adjacent_district_indexes:
+        for j in range(len(adjacent_district_indexes)):
+            # Index values
+            adj_district_index = adjacent_district_indexes[j]
+            edge_weight = edge_weights[j]
 
             # Extract district data associated with adj_district_index
             adj_district_record = \
@@ -75,7 +80,7 @@ def get_district_adjacency_graph(district_filtered_df, k):
             # Add edge between districts, including district data
             adjacency_list_graph.add_edge(district_name, district_record,
                                           adj_district_name,
-                                          adj_district_record)
+                                          adj_district_record, edge_weight)
 
     return adjacency_list_graph
 

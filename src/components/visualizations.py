@@ -329,10 +329,13 @@ def get_districts_network_chart(district_df, grad_rate_df, district, metric,
     district_metadata = district_adjacency_graph.get_vertex_metadata()
 
     # Convert to graph object
-    G = nx.from_dict_of_lists(district_adjacency_graph_data)
+    G = nx.Graph([(u, v, {'weight': 1 / w})  # inverting weights ensures
+                 # for accurate positions, since spring_layout treats larger
+                  # values as stronger attractive forces
+                  for (u, v,), w in district_adjacency_graph_data.items()])
 
     # Generate (x, y) coordinates for nodes in graph
-    pos = nx.spring_layout(G, seed=0, center=(0, 0))
+    pos = nx.spring_layout(G, weight='weight', seed=0, center=(0, 0))
 
     # Format data for visualization
 
