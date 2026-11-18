@@ -10,7 +10,7 @@ from sklearn.compose import ColumnTransformer, make_column_selector
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder
 
-from src.utils.district_adjacency_graph import AdjacencyListGraph
+from src.utils.adjacency_list_graph import AdjacencyListGraph
 
 
 def get_district_adjacency_graph(district_filtered_df, k):
@@ -146,8 +146,6 @@ def fit_district_k_nearest_neighbors(district_filtered_df, k):
     ).set_output(transform="pandas")  # format output as DataFrame
 
     features_transformed_df = preprocessor.fit_transform(features_df)
-
-    features_transformed_df.head()
 
     # Fit unsupervized K-Nearest Neighbors model
     # Training the model has time complexity O(D * NlogN) for a data set with

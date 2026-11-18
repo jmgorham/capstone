@@ -9,8 +9,8 @@ import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash_iconify import DashIconify
 
-import src.components.kpis as kpis
 import src.components.visualizations as viz
+from src.components import kpis
 from src.components.filters_init import initialize_filters
 
 

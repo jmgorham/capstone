@@ -5,16 +5,15 @@ on the dashboard in order to communicate with data effectively.
 """
 
 import networkx as nx
-import plotly.express as px
-import plotly.graph_objects as go
-import plotly.colors as pc
 import numpy as np
 import pandas as pd
+import plotly.colors as pc
+import plotly.express as px
+import plotly.graph_objects as go
 
 from src.utils.data_utils import get_disparity_df, get_gaps_df
-from src.utils.sorting_utils import sort_subgroups
 from src.utils.district_network_utils import get_district_adjacency_graph
-from src.utils.district_adjacency_graph import AdjacencyListGraph
+from src.utils.sorting_utils import sort_subgroups
 
 
 def get_grad_rate_line_chart(grad_rate_df, district, metric, start_year,

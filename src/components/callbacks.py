@@ -5,11 +5,11 @@ including KPI tiles and data visualizations, whenever the relevant UI filter
 selections are changed.
 """
 
-from dash import Input, Output, callback, no_update, exceptions
+from dash import Input, Output, callback, exceptions, no_update
 
 import src.components.visualizations as viz
 from src.components import kpis
-from src.utils.sample_data import get_sample_grad_rate_data, get_sample_district_data
+from src.utils.sample_data import get_sample_district_data, get_sample_grad_rate_data
 
 
 # Update KPI 1: Statewide Graduation Rate

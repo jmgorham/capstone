@@ -5,8 +5,9 @@ development.
 """
 
 import random
-import pandas as pd
 from pathlib import Path
+
+import pandas as pd
 
 SUBGROUPS = ['All Students', 'Female', 'Male', 'Non-binary',
              'Students with Disabilities',

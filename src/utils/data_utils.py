@@ -92,8 +92,8 @@ def get_gaps_df(grad_rate_df, metric, year):
 
     # Extract baseline for comparison, grad rate for 'All Students'
     # Requires filtering which is O(N * M)
-    baseline = grad_rate_filtered_df[
-        grad_rate_filtered_df['subgroup'] == 'All Students']['value'].values[0]
+    baseline = grad_rate_filtered_df.loc[
+        grad_rate_filtered_df['subgroup'] == 'All Students', 'value'].values[0]
 
     # Filter to exclude subgroup 'All Students'
     subgroups_gap_df = grad_rate_filtered_df[
